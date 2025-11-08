@@ -79,7 +79,7 @@ app.post("/api/login", async (req, res) => {
       return res.status(401).json({ message: "Password salah!" });
     }
 
-    res.json({ message: `Selamat Datang ${user.nama}`, user: user });
+    res.json({ message: `Selamat Datang ${user.nama}`, user });
   });
 });
 
