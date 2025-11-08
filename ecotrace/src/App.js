@@ -9,7 +9,6 @@ import {
   Route,
   useLocation,
 } from "react-router-dom";
-import { json } from "express";
 
 function Layout() {
   const location = useLocation;

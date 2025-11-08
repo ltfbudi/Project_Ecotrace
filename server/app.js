@@ -40,7 +40,11 @@ app.get("/api/data-transaksi", (req, res) => {
 
       const data = result;
 
-      res.json({ message: "Data Berhasil ditemukan", data, succeed: true });
+      res.json({
+        message: "Data Berhasil ditemukan",
+        trans: data,
+        succeed: true,
+      });
     });
   } catch (err) {
     res.status(500).json({ message: "Terjadi kesalahan pada Server" });
