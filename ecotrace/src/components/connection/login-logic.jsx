@@ -1,6 +1,8 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-const LoginLogic = () => {
+const LoginLogic = (setUser) => {
+  const navigate = useNavigate();
   const [form, setForm] = useState({
     noHP: "",
     pass: "",
@@ -28,6 +30,10 @@ const LoginLogic = () => {
       const data = await res.json();
 
       alert(`${data.message}`);
+      if (data.succeed) {
+        navigate("/dashboard");
+        setUser(data.user);
+      }
     } catch (err) {
       alert(err.message);
     }

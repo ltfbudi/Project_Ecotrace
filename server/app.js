@@ -25,6 +25,28 @@ app.get("/api", (req, res) => {
   res.json({ message: "Terhubung ke Express.JS" });
 });
 
+app.get("/api/data-transaksi", (req, res) => {
+  const { noHP } = req.query;
+
+  try {
+    const sql = `SELECT a.noHP, b.pemakaian, b.biaya, b.stat FROM users AS a JOIN transaksi AS b ON a.noHP = b.noPH WHERE a.noHP = ?`;
+
+    db.query(sql, [noHP], (err, result) => {
+      if (err) {
+        return res
+          .status(500)
+          .json({ message: "Terjadi kesalahan pada Server", succeed: true });
+      }
+
+      const data = result;
+
+      res.json({ message: "Data Berhasil ditemukan", data, succeed: true });
+    });
+  } catch (err) {
+    res.status(500).json({ message: "Terjadi kesalahan pada Server" });
+  }
+});
+
 app.post("/api/register", async (req, res) => {
   const { noHP, nama, pass } = req.body;
 
@@ -64,11 +86,15 @@ app.post("/api/login", async (req, res) => {
 
   db.query(sql, [noHP], async (err, result) => {
     if (err) {
-      return res.status(500).json({ message: "Terjadi kesalahan Server :(" });
+      return res
+        .status(500)
+        .json({ message: "Terjadi kesalahan Server :(", user, succeed: true });
     }
 
     if (result.length === 0) {
-      return res.status(400).json({ message: "Akun tidak ditemukan!" });
+      return res
+        .status(400)
+        .json({ message: "Akun tidak ditemukan!", user, succeed: true });
     }
 
     const user = result[0];
@@ -76,10 +102,12 @@ app.post("/api/login", async (req, res) => {
     const match = await bcrypt.compare(pass, user.pass);
 
     if (!match) {
-      return res.status(401).json({ message: "Password salah!" });
+      return res
+        .status(401)
+        .json({ message: "Password salah!", user, succeed: true });
     }
 
-    res.json({ message: `Selamat Datang ${user.nama}`, user });
+    res.json({ message: `Selamat Datang ${user.nama}`, user, succeed: true });
   });
 });
 

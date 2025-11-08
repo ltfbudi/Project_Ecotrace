@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Regis from "./log-reg/regis";
 import Login from "./log-reg/login";
 
-const Utama = () => {
+const Utama = ({ setUser }) => {
   const [name, setName] = useState("Masuk");
   const [condition, setCon] = useState(true);
 
@@ -17,7 +17,12 @@ const Utama = () => {
         </div>
         <div className="w-2/5">
           {condition ? (
-            <Login con={setCon} name={name} setName={setName} />
+            <Login
+              con={setCon}
+              name={name}
+              setName={setName}
+              setUser={setUser}
+            />
           ) : (
             <Regis con={setCon} name={name} setName={setName} />
           )}

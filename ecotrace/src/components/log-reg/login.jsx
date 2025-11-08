@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import LoginLogic from "../connection/login-logic";
 
-const Login = ({ con, name, setName }) => {
-  const { form, change, handleSubmit } = LoginLogic();
+const Login = ({ con, name, setName, setUser }) => {
+  const { form, change, handleSubmit } = LoginLogic(setUser);
 
   return (
     <div className="flex items-center bg-white min-h-screen rounded-tl-2xl px-5">
