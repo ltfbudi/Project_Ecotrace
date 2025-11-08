@@ -10,13 +10,17 @@ import {
   useLocation,
 } from "react-router-dom";
 
-function Layout() {
-  const location = useLocation;
+function Layout({ children }) {
+  const location = useLocation();
   const hide = ["/"];
+  const show = !hide.includes(location.pathname);
 
-  const shows = !hide.includes(location.pathname);
-
-  return <>{shows && <Navbar />}</>;
+  return (
+    <div>
+      {show && <Navbar />}
+      <div>{children}</div>
+    </div>
+  );
 }
 
 function App() {
@@ -36,11 +40,13 @@ function App() {
   return (
     <div>
       <Router>
-        <Routes>
-          <Route path="/" element={<Utama setUser={setUser} />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/tagihan" element={<Tagihan />} />
-        </Routes>
+        <Layout>
+          <Routes>
+            <Route path="/" element={<Utama setUser={setUser} />} />
+            <Route path="/dashboard" element={<Dashboard user={user} />} />
+            <Route path="/tagihan" element={<Tagihan />} />
+          </Routes>
+        </Layout>
       </Router>
     </div>
   );

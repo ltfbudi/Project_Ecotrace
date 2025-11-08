@@ -29,7 +29,7 @@ app.get("/api/data-transaksi", (req, res) => {
   const { noHP } = req.query;
 
   try {
-    const sql = `SELECT a.noHP, b.pemakaian, b.biaya, b.stat FROM users AS a JOIN transaksi AS b ON a.noHP = b.noPH WHERE a.noHP = ?`;
+    const sql = `SELECT a.noHP, b.pemakaian, b.biaya, b.stat FROM users AS a JOIN transaksi AS b ON a.noHP = b.noHP WHERE a.noHP = ?`;
 
     db.query(sql, [noHP], (err, result) => {
       if (err) {
@@ -92,13 +92,13 @@ app.post("/api/login", async (req, res) => {
     if (err) {
       return res
         .status(500)
-        .json({ message: "Terjadi kesalahan Server :(", user, succeed: true });
+        .json({ message: "Terjadi kesalahan Server :(", succeed: false });
     }
 
     if (result.length === 0) {
       return res
         .status(400)
-        .json({ message: "Akun tidak ditemukan!", user, succeed: true });
+        .json({ message: "Akun tidak ditemukan!", succeed: false });
     }
 
     const user = result[0];
@@ -108,7 +108,7 @@ app.post("/api/login", async (req, res) => {
     if (!match) {
       return res
         .status(401)
-        .json({ message: "Password salah!", user, succeed: true });
+        .json({ message: "Password salah!", succeed: false });
     }
 
     res.json({ message: `Selamat Datang ${user.nama}`, user, succeed: true });

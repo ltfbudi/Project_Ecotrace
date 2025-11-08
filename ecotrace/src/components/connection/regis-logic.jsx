@@ -26,8 +26,11 @@ const RegisLogic = () => {
         body: JSON.stringify(form),
       });
 
-      const data = res.json();
-      alert(data.message);
+      const data = await res.json();
+      if (res.ok) {
+        alert(data.message);
+        setForm({ noHP: "", nama: "", pass: "" });
+      }
     } catch (err) {
       alert("Terjadi kesalahan koneksi");
     }
