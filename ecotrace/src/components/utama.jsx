@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 import Regis from "./log-reg/regis";
 import Login from "./log-reg/login";
 

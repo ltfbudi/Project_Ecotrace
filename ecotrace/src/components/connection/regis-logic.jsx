@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const RegisLogic = () => {
+const RegisLogic = (con, setName) => {
   const [form, setForm] = useState({
     noHP: "",
     nama: "",
@@ -27,9 +27,12 @@ const RegisLogic = () => {
       });
 
       const data = await res.json();
-      if (res.ok) {
+      if (data.succeed) {
         alert(data.message);
-        setForm({ noHP: "", nama: "", pass: "" });
+        setName("Masuk");
+        con(true);
+      } else {
+        alert(data.message);
       }
     } catch (err) {
       alert("Terjadi kesalahan koneksi");

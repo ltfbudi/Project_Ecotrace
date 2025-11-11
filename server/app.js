@@ -1,6 +1,7 @@
 const express = require("express");
 const mysql = require("mysql2");
 const bcrypt = require("bcrypt");
+const val = require("validator");
 const app = express();
 const port = 5000;
 
@@ -55,7 +56,14 @@ app.post("/api/register", async (req, res) => {
   const { noHP, nama, pass } = req.body;
 
   if (!noHP || !nama || !pass) {
-    return res.status(400).json({ message: "Ada data yang kosong!" });
+    return res
+      .status(400)
+      .json({ message: "Ada data yang kosong!", succeed: false });
+  }
+  if (!val.isMobilePhone(noHP, "id-ID")) {
+    return res
+      .status(400)
+      .json({ message: "Format Nomor HP salah", succeed: false });
   }
 
   try {
@@ -66,16 +74,22 @@ app.post("/api/register", async (req, res) => {
     db.query(sql, [noHP, nama, hashedPass], (err) => {
       if (err) {
         if (err.code === "ER_DUP_ENTRY") {
-          return res.status(400).json({ message: "Nomor HP Sudah terdaftar" });
+          return res
+            .status(400)
+            .json({ message: "Nomor HP Sudah terdaftar", succeed: false });
         }
         return res
           .status(500)
-          .json({ message: "Terjadi kesalahan pada Server" });
+          .json({ message: "Terjadi kesalahan pada Server", succeed: false });
       }
-      res.status(201).json({ message: "Registrasi berhasil dilakukan" });
+      res
+        .status(201)
+        .json({ message: "Registrasi berhasil dilakukan", succeed: true });
     });
   } catch (err) {
-    res.status(500).json({ message: "Terjadi kesalahan pada Server" });
+    res
+      .status(500)
+      .json({ message: "Terjadi kesalahan pada Server", succeed: false });
   }
 });
 

@@ -2,7 +2,7 @@ import { useState } from "react";
 import RegisLogic from "../connection/regis-logic";
 
 const Regis = ({ con, name, setName }) => {
-  const { form, change, handleSubmit } = RegisLogic();
+  const { form, change, handleSubmit } = RegisLogic(con, setName);
 
   return (
     <div className="flex items-center bg-white min-h-screen rounded-tl-2xl px-5">
