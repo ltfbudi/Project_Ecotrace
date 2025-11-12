@@ -44,7 +44,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Utama setUser={setUser} />} />
             <Route path="/dashboard" element={<Dashboard user={user} />} />
-            <Route path="/tagihan" element={<Tagihan />} />
+            <Route path="/tagihan" element={<Tagihan user={user} />} />
           </Routes>
         </Layout>
       </Router>

@@ -30,7 +30,7 @@ app.get("/api/data-transaksi", (req, res) => {
   const { noHP } = req.query;
 
   try {
-    const sql = `SELECT a.noHP, b.pemakaian, b.biaya, b.stat FROM users AS a JOIN transaksi AS b ON a.noHP = b.noHP WHERE a.noHP = ?`;
+    const sql = `SELECT a.noHP, a.nama, b.pemakaian, b.biaya, b.stat FROM users AS a JOIN transaksi AS b ON a.noHP = b.noHP WHERE a.noHP = ?`;
 
     db.query(sql, [noHP], (err, result) => {
       if (err) {

@@ -6,7 +6,7 @@ const CompDash = ({ data }) => {
           <thead className="bg-gray-100 text-gray-700 text-center">
             <tr>
               <th className="px-4 py-3 text-sm font-semibold border-b">
-                No Telepon
+                Bulan
               </th>
               <th className="px-4 py-3 text-sm font-semibold border-b">
                 Pemakaian
@@ -23,7 +23,10 @@ const CompDash = ({ data }) => {
           <tbody className="text-gray-600">
             {data.length > 0 ? (
               data.map((item, index) => (
-                <tr key={index} className="border-b hover:bg-gray-50">
+                <tr
+                  key={index}
+                  className="border-b text-center hover:bg-gray-50"
+                >
                   <td className="px-4 py-2">{item.noHP}</td>
                   <td className="px-4 py-2">{item.pemakaian}</td>
                   <td className="px-4 py-2">

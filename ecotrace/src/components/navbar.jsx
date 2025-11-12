@@ -9,9 +9,8 @@ const Navbar = () => {
         </a>
       </div>
       <div className="flex justify-end items-center gap-9 w-2/3 pr-12 text-lg font-Inter text-nav">
-        <a href="/">Dashboard</a>
-        <a href="/">Tagihan</a>
-        <a href="/">Transaksi</a>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/tagihan">Tagihan</a>
       </div>
       <div className="flex  w-1/5 text-nav justify-center items-center text-lg font-Inter gap-2">
         <svg
