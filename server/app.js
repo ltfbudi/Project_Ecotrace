@@ -26,36 +26,78 @@ app.get("/api", (req, res) => {
   res.json({ message: "Terhubung ke Express.JS" });
 });
 
-app.get("/api/data-transaksi", (req, res) => {
-  const { noHP } = req.query;
+// ADMIN QUERY
 
+app.get("/api/get-user-all", (req, res) => {
   try {
-    const sql = `SELECT a.noHP, a.nama, b.pemakaian, b.biaya, b.stat FROM users AS a JOIN transaksi AS b ON a.noHP = b.noHP WHERE a.noHP = ?`;
+    const sql = `SELECT nama, noHP, No_Pel, alamat, verif FROM users WHERE role = "user"`;
 
-    db.query(sql, [noHP], (err, result) => {
+    db.query(sql, (err, result) => {
       if (err) {
         return res
           .status(500)
-          .json({ message: "Terjadi kesalahan pada Server", succeed: true });
+          .json({ message: "Terjadi kesalahan pada Server", succeed: false });
+      }
+
+      const data = result;
+
+      res.json({
+        data,
+        succeed: true,
+      });
+    });
+  } catch (err) {}
+});
+
+app.post("/api/confirm-acc", (req, res) => {
+  const { No_Pel, noHP } = req.body;
+  const sql = `UPDATE users SET verif = "yes", No_Pel = ? WHERE noHP = ?`;
+
+  db.query(sql, [No_Pel, noHP], (err, result) => {
+    if (err) {
+      return res
+        .status(500)
+        .json({ message: "Terjadi kesalahan pada Server", succeed: false });
+    }
+    res.json({
+      succeed: true,
+    });
+  });
+});
+
+// USER QUERY
+
+app.get("/api/data-transaksi", (req, res) => {
+  const { No_Pel } = req.query;
+  try {
+    const sql = `SELECT a.noHP, a.nama, b.pemakaian, b.biaya, b.stat FROM users AS a JOIN transaksi AS b ON a.noHP = b.noHP WHERE a.No_Pel = ?`;
+
+    db.query(sql, [No_Pel], (err, result) => {
+      if (err) {
+        return res
+          .status(500)
+          .json({ message: "Terjadi kesalahan pada Server", succeed: false });
       }
 
       const data = result;
 
       res.json({
         message: "Data Berhasil ditemukan",
-        trans: data,
+        data,
         succeed: true,
       });
     });
   } catch (err) {
-    res.status(500).json({ message: "Terjadi kesalahan pada Server" });
+    res
+      .status(500)
+      .json({ message: "Terjadi kesalahan pada Server", succeed: false });
   }
 });
 
 app.post("/api/register", async (req, res) => {
-  const { noHP, nama, pass } = req.body;
+  const { noHP, nama, pass, passConfirm } = req.body;
 
-  if (!noHP || !nama || !pass) {
+  if (!noHP || !nama || !pass || !passConfirm) {
     return res
       .status(400)
       .json({ message: "Ada data yang kosong!", succeed: false });
@@ -64,6 +106,16 @@ app.post("/api/register", async (req, res) => {
     return res
       .status(400)
       .json({ message: "Format Nomor HP salah", succeed: false });
+  }
+  if (pass.length < 8) {
+    return res
+      .status(400)
+      .json({ message: "Password kurang panjang!", succeed: false });
+  }
+  if (!pass === passConfirm) {
+    return res
+      .status(400)
+      .json({ message: "Password Tidak Match!", succeed: false });
   }
 
   try {

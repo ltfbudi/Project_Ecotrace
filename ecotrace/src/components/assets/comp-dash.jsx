@@ -1,4 +1,20 @@
-const CompDash = ({ data }) => {
+import { useEffect, useState } from "react";
+
+const CompDash = ({ user }) => {
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    const Get = async (setData, noHP) => {
+      const res = await fetch(`/api/data-transaksi?noHP=${noHP}`);
+      const temp = res.json();
+
+      if (temp.succeed) {
+        setData(temp.data);
+      }
+    };
+    Get(setData, user.noHP);
+  }, []);
+
   return (
     <div className="p-4">
       <div className="overflow-x-auto rounded-lg shadow-sm border">
@@ -20,38 +36,25 @@ const CompDash = ({ data }) => {
             </tr>
           </thead>
 
-          <tbody className="text-gray-600">
-            {data.length > 0 ? (
-              data.map((item, index) => (
-                <tr
-                  key={index}
-                  className="border-b text-center hover:bg-gray-50"
+          <tbody className="text-gray-600 text-center">
+            {user.verif === "no" ? (
+              <tr>
+                <td
+                  colSpan="4"
+                  className="px-4 py-3 text-gray-400 text-sm italic"
                 >
-                  <td className="px-4 py-2">{item.noHP}</td>
-                  <td className="px-4 py-2">{item.pemakaian}</td>
-                  <td className="px-4 py-2">
-                    Rp {Number(item.biaya).toLocaleString("id-ID")}
-                  </td>
-                  <td
-                    className={`px-4 py-2 font-medium ${
-                      item.stat === "lunas"
-                        ? "text-green-600"
-                        : item.stat === "pending"
-                        ? "text-yellow-400"
-                        : "text-red-600"
-                    }`}
-                  >
-                    {item.stat}
-                  </td>
-                </tr>
-              ))
+                  Akun belum diverifikasi Admin
+                </td>
+              </tr>
+            ) : Array.isArray(data) && data.length > 0 ? (
+              ""
             ) : (
               <tr>
                 <td
                   colSpan="4"
                   className="px-4 py-3 text-gray-400 text-sm italic"
                 >
-                  Tidak ada data transaksi
+                  Tidak ada riwayat data
                 </td>
               </tr>
             )}

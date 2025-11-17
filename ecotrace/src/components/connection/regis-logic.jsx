@@ -5,6 +5,7 @@ const RegisLogic = (con, setName) => {
     noHP: "",
     nama: "",
     pass: "",
+    passConfirm: "",
   });
 
   const change = (e) => {
@@ -38,7 +39,6 @@ const RegisLogic = (con, setName) => {
       alert("Terjadi kesalahan koneksi");
     }
   };
-
   return { form, change, handleSubmit };
 };
 

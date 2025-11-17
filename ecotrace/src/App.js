@@ -1,14 +1,13 @@
 import { useEffect, useState } from "react";
 import Navbar from "./components/navbar";
-import Dashboard from "./components/dashboard";
 import Utama from "./components/utama";
-import Tagihan from "./components/tagihan";
 import {
   BrowserRouter as Router,
   Routes,
   Route,
   useLocation,
 } from "react-router-dom";
+import TheApp from "./components/theApp";
 
 function Layout({ children }) {
   const location = useLocation();
@@ -43,8 +42,14 @@ function App() {
         <Layout>
           <Routes>
             <Route path="/" element={<Utama setUser={setUser} />} />
-            <Route path="/dashboard" element={<Dashboard user={user} />} />
-            <Route path="/tagihan" element={<Tagihan user={user} />} />
+            <Route
+              path="/dashboard"
+              element={<TheApp page={"Dashboard"} user={user} />}
+            />
+            <Route
+              path="/tagihan"
+              element={<TheApp page={"Tagihan"} user={user} />}
+            />
           </Routes>
         </Layout>
       </Router>
