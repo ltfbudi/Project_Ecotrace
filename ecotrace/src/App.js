@@ -50,6 +50,14 @@ function App() {
               path="/tagihan"
               element={<TheApp page={"Tagihan"} user={user} />}
             />
+            <Route
+              path="/riwayat"
+              element={<TheApp page={"Riwayat"} user={user} />}
+            />
+            <Route
+              path="/profile"
+              element={<TheApp page={"Profile"} user={user} />}
+            />
           </Routes>
         </Layout>
       </Router>

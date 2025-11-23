@@ -22,7 +22,7 @@ const DashAdm = ({ user }) => {
       {confirm && <Confirm noHP={noHP} setConfirm={setConfirm} />}
 
       <div className="overflow-x-auto rounded-lg shadow-sm border">
-        <table className="min-w-[900px] w-full bg-white">
+        <table className="table-fixed min-w-[900px] w-full bg-white">
           <thead className="bg-gray-100 text-gray-700 text-center">
             <tr>
               <th className="px-4 py-3 text-sm font-semibold border-b">Nama</th>
@@ -52,7 +52,7 @@ const DashAdm = ({ user }) => {
                   <td className="px-4 py-3 text-gray-400 text-sm italic">
                     {item.No_Pel ? item.No_Pel : "-"}
                   </td>
-                  <td className="px-4 py-3 text-gray-400 text-sm italic">
+                  <td className="wrap-break-word whitespace-normal px-4 py-3 text-gray-400 text-sm italic">
                     {item.alamat ? item.alamat : "-"}
                   </td>
                   <td className="px-4 py-3 text-gray-400 text-sm italic">
@@ -117,7 +117,7 @@ const DashAdm = ({ user }) => {
                   colSpan="5"
                   className="px-4 py-3 text-gray-400 text-sm italic"
                 >
-                  Akun belum diverifikasi Admin
+                  Tidak ada User
                 </td>
               </tr>
             )}

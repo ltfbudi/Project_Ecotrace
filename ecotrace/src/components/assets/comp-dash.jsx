@@ -4,15 +4,15 @@ const CompDash = ({ user }) => {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    const Get = async (setData, noHP) => {
-      const res = await fetch(`/api/data-transaksi?noHP=${noHP}`);
-      const temp = res.json();
+    const Get = async (No_Pel) => {
+      const res = await fetch(`/api/data-transaksi?No_Pel=${No_Pel}`);
+      const temp = await res.json();
 
       if (temp.succeed) {
         setData(temp.data);
       }
     };
-    Get(setData, user.noHP);
+    Get(user.No_Pel);
   }, []);
 
   return (
@@ -46,17 +46,42 @@ const CompDash = ({ user }) => {
                   Akun belum diverifikasi Admin
                 </td>
               </tr>
-            ) : Array.isArray(data) && data.length > 0 ? (
-              ""
+            ) : user.verif === "yes" ? (
+              data.length > 0 ? (
+                data.map((item, index) => (
+                  <tr key={index}>
+                    <td className="py-2">{item.bulan}</td>
+                    <td className="py-2">{item.pemakaian}</td>
+                    <td className="py-2">
+                      {"Rp " + Number(item.biaya).toLocaleString("id-ID")}
+                    </td>
+                    <td
+                      className={`py-2 ${
+                        item.stat === "nunggak"
+                          ? "text-red-600"
+                          : item.stat === "pending"
+                          ? "text-yellow-300"
+                          : item.stat === "lunas"
+                          ? "text-green-500"
+                          : ""
+                      }`}
+                    >
+                      {item.stat}
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td
+                    colSpan="4"
+                    className="px-4 py-3 text-gray-400 text-sm italic"
+                  >
+                    Tidak ada riwayat data
+                  </td>
+                </tr>
+              )
             ) : (
-              <tr>
-                <td
-                  colSpan="4"
-                  className="px-4 py-3 text-gray-400 text-sm italic"
-                >
-                  Tidak ada riwayat data
-                </td>
-              </tr>
+              ""
             )}
           </tbody>
         </table>
