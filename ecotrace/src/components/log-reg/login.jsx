@@ -1,13 +1,12 @@
-import { useEffect, useState } from "react";
 import LoginLogic from "../connection/login-logic";
 
 const Login = ({ con, name, setName, setUser }) => {
   const { form, change, handleSubmit } = LoginLogic(setUser);
 
   return (
-    <div className="flex items-center bg-white min-h-screen rounded-tl-2xl px-5">
-      <div className="flex flex-col gap-5 w-full p">
-        <h1 className="pl-6 font-mukta text-4xl font-bold text-navBase mb-4">
+    <div className="flex items-center bg-white rounded-2xl lg:rounded-b-none lg:rounded-tl-4xl lg:rounded-tr-none px-8 py-6 w-full lg:min-h-screen h-3/6">
+      <div className="flex flex-col gap-5 w-full">
+        <h1 className=" lg:pl-6 font-mukta text-2xl md:text-3xl lg:text-4xl text-center lg:text-start font-bold text-navBase mb-0 lg:mb-4">
           {name}
         </h1>
         <form onSubmit={handleSubmit} className="flex flex-col gap-5">
@@ -16,7 +15,7 @@ const Login = ({ con, name, setName, setUser }) => {
             name="noHP"
             value={form.noHP}
             onChange={change}
-            className="w-4/5 border border-gray-400 rounded-full text-gray-800 placeholder-gray-300 h-11 px-5 focus:rounded-full focus:outline-gray-500"
+            className="w-full lg:w-4/5 border border-gray-400 rounded-full text-gray-800 placeholder-gray-300 h-11 px-5 focus:rounded-full focus:outline-gray-500"
             placeholder="Masukkan Nomor HP"
           />
           <input
@@ -24,10 +23,10 @@ const Login = ({ con, name, setName, setUser }) => {
             name="pass"
             value={form.pass}
             onChange={change}
-            className="w-4/5 border border-gray-400 rounded-full text-gray-800 placeholder-gray-300 h-11 px-5 focus:rounded-full focus:outline-gray-500"
+            className="w-full lg:w-4/5 border border-gray-400 rounded-full text-gray-800 placeholder-gray-300 h-11 px-5 focus:rounded-full focus:outline-gray-500"
             placeholder="Masukkan Password"
           />
-          <div className="flex w-full gap-3">
+          <div className="flex justify-center lg:justify-normal w-full gap-3">
             <button
               type="submit"
               className="bg-linear-to-br from-nav to-gray-100 w-32 shadow-[0_0_6px_1px_rgba(0,0,0,0.2)] rounded-full py-2 text-white font-bold text-md transform hover:-translate-x-0.5 hover:-translate-y-0.5 transition duration-300"
