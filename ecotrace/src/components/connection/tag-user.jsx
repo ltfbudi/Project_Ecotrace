@@ -10,12 +10,12 @@ const TagUser = ({ data }) => {
     No_Pel: "",
   });
   const [struk, setStruk] = useState(false);
-  const [temp2, setTemp2] = useState({});
+  const [strukAcc, setStrukAcc] = useState(null);
 
   return (
     <div className="w-full flex flex-col gap-2 justify-center items-center">
       {bukti && <ConfirmPay setBukti={setBukti} data={temp} />}
-      {struk && <CompStruk data={data} setStruk={setStruk} />}
+      {struk && <CompStruk data={strukAcc} setStruk={setStruk} />}
       {Array.isArray(data) && data.length > 0
         ? data.map((item, index) => (
             <div
@@ -71,7 +71,7 @@ const TagUser = ({ data }) => {
                           });
                         } else if (item.stat === "lunas") {
                           setStruk(true);
-                          setTemp2(item);
+                          setStrukAcc(item);
                         } else {
                           alert("Nothing");
                         }

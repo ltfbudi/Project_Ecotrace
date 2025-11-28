@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Pay from "../btn-assets/pay";
 import CompStruk from "../btn-assets/comp-struk";
+import Bukti from "../btn-assets/bukti-pend";
 
 const CompTagihan = ({ user }) => {
   const [data, setData] = useState([]);
@@ -11,8 +12,15 @@ const CompTagihan = ({ user }) => {
     biaya: "",
   });
 
+  const [temp, setTemp] = useState({
+    url: "",
+    invoice: "",
+    No_Pel: "",
+  });
+
   const [strukAcc, setAcc] = useState(null);
   const [struk, setStruk] = useState(false);
+  const [bukti, setBukti] = useState(false);
   const [url, setURL] = useState("");
 
   useEffect(() => {
@@ -28,6 +36,7 @@ const CompTagihan = ({ user }) => {
   }, []);
   return (
     <div className="w-full flex flex-col gap-2 justify-center items-center">
+      {bukti && <Bukti setBukti={setBukti} data={temp} />}
       {struk && <CompStruk data={strukAcc} setStruk={setStruk} />}
       {pay && <Pay who={who} setPay={setPay} setURL={setURL} />}
       {user.verif === "no" ? (
@@ -90,7 +99,12 @@ const CompTagihan = ({ user }) => {
                         No_Pel: item.No_Pel,
                       });
                     } else if (item.stat === "pending") {
-                      alert("pending");
+                      setBukti(true);
+                      setTemp({
+                        url: item.url_bukti,
+                        invoice: item.invoice,
+                        No_Pel: item.No_Pel,
+                      });
                     } else if (item.stat === "lunas") {
                       setStruk(true);
                       setAcc(item);

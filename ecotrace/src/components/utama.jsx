@@ -9,8 +9,10 @@ const Utama = ({ setUser }) => {
   return (
     <div className="bg-nav min-h-screen">
       <div className="flex justify-center items-center min-h-screen">
-        <div className="w-3/5 text-center text-amber-50">
-          <h1 className="text-6xl font-Inter font-bold">ecotrace.</h1>
+        <div className="w-full lg:w-3/5 text-center text-amber-50">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-Inter font-bold">
+            ecotrace.
+          </h1>
           <h3 className="text-md">
             Aplikasi Pencatat Meter Air di KSM Bayu Bening Eco Fresh
           </h3>

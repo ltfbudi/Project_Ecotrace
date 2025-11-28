@@ -66,7 +66,13 @@ const CompDash = ({ user }) => {
                           : ""
                       }`}
                     >
-                      {item.stat}
+                      {item.stat === "nunggak"
+                        ? "Belum Dibayar"
+                        : item.stat === "pending"
+                        ? "Pending"
+                        : item.stat === "lunas"
+                        ? "Sudah Lunas"
+                        : ""}
                     </td>
                   </tr>
                 ))

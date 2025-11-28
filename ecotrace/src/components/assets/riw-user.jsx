@@ -47,7 +47,7 @@ const RiwUser = ({ user }) => {
                 </tr>
               ))
             ) : (
-              <tr>
+              <tr className="text-center text-gray-400">
                 <td colSpan="3">Tidak ada Data!</td>
               </tr>
             )}

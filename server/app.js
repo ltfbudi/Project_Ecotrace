@@ -113,7 +113,7 @@ app.post("/api/confirm-acc", (req, res) => {
 });
 
 app.get("/api/get-tagihan-all-user", (req, res) => {
-  const sql = `SELECT a.noHP, a.nama, b.invoice, b.pemakaian, b.biaya, b.stat, b.No_Pel, b.url_bukti, DATE_FORMAT(b.waktu, '%M') AS bulan FROM users AS a JOIN transaksi AS b ON a.No_Pel = b.No_Pel ORDER BY b.No_Pel, b.waktu DESC`;
+  const sql = `SELECT a.noHP, a.nama, b.invoice, b.pemakaian, b.biaya, b.stat, b.No_Pel, b.url_bukti, b.pem_awal, b.pem_akhir, DATE_FORMAT(b.waktu, '%M') AS bulan FROM users AS a JOIN transaksi AS b ON a.No_Pel = b.No_Pel ORDER BY b.No_Pel, b.waktu DESC`;
 
   db.query(sql, (err, result) => {
     if (err) {
@@ -283,7 +283,7 @@ app.post("/api/upload-bayar", upload.single("file"), async (req, res) => {
 app.get("/api/data-transaksi", (req, res) => {
   const { No_Pel } = req.query;
   try {
-    const sql = `SELECT a.noHP, a.nama, b.pem_awal, b.pem_akhir, b.invoice, b.pemakaian, b.biaya, b.stat, b.No_Pel, a.alamat, DATE_FORMAT(b.waktu, '%M') AS bulan FROM users AS a JOIN transaksi AS b ON a.No_Pel = b.No_Pel WHERE a.No_Pel = ? ORDER BY b.waktu DESC`;
+    const sql = `SELECT a.noHP, a.nama, b.pem_awal, b.pem_akhir, b.invoice, b.pemakaian, b.biaya, b.stat, b.No_Pel, a.alamat, b.url_bukti, DATE_FORMAT(b.waktu, '%M') AS bulan FROM users AS a JOIN transaksi AS b ON a.No_Pel = b.No_Pel WHERE a.No_Pel = ? ORDER BY b.waktu DESC`;
 
     db.query(sql, [No_Pel], (err, result) => {
       if (err) {
