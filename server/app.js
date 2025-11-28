@@ -145,6 +145,105 @@ app.post("/api/confirm-pay", (req, res) => {
   });
 });
 
+app.delete("/api/decline-acc/:noHP", (req, res) => {
+  const { noHP } = req.params;
+
+  const sql = `DELETE FROM users WHERE noHP = ?`;
+  db.query(sql, [noHP], (err, result) => {
+    if (err) {
+      return res
+        .status(500)
+        .json({ message: "Gagal terhubung database!", succeed: false });
+    }
+
+    res.status(200).json({ message: "Akun ditolak!", succeed: true });
+  });
+});
+
+app.delete("/api/delete-trans-acc/:No_Pel", (req, res) => {
+  const { No_Pel } = req.params;
+
+  const sql = `DELETE FROM transaksi WHERE No_Pel = ?`;
+
+  db.query(sql, [No_Pel], (err, result) => {
+    if (err) {
+      return res.status(500).json({ succeed: false });
+    }
+
+    res.status(200).json({ succeed: true });
+  });
+});
+
+app.delete("/api/delete-acc/:No_Pel", (req, res) => {
+  const { No_Pel } = req.params;
+
+  const sql = `DELETE FROM users WHERE No_Pel = ?`;
+
+  db.query(sql, [No_Pel], (err, result) => {
+    if (err) {
+      return res
+        .status(500)
+        .json({ message: "Gagal Terkoneksi", succeed: false });
+    }
+
+    res.status(200).json({ message: "Berhasil hapus akun", succeed: true });
+  });
+});
+
+app.post("/api/his-confirm", (req, res) => {
+  const { text } = req.body;
+
+  const sql = `INSERT INTO history (hal) VALUES (?)`;
+  db.query(sql, [text], (err, result) => {
+    if (err) {
+      return res
+        .status(500)
+        .json({ message: "Gagal terkoneksi", succeed: false });
+    }
+    res.status(200).json({ message: "Berhasil input history", succeed: true });
+  });
+});
+
+app.post("/api/his-acc-conf", (req, res) => {
+  const { text, No_Pel } = req.body;
+
+  const sql = `INSERT INTO history (hal, No_Pel) VALUES (?,?)`;
+  db.query(sql, [text, No_Pel], (err, result) => {
+    if (err) {
+      return res
+        .status(500)
+        .json({ message: "Gagal Terkoneksi", succeed: false });
+    }
+
+    res.status(200).json({ message: "Berhasil", succeed: true });
+  });
+});
+
+app.get("/api/history-all", (req, res) => {
+  const sql = `SELECT * FROM history`;
+
+  db.query(sql, (err, result) => {
+    if (err) {
+      return res
+        .status(500)
+        .json({ message: "Gagal terkoneksi", succeed: false });
+    }
+
+    const formatted = result.map((item) => {
+      const tanggal = new Date(item.tanggal); // ganti sesuai nama kolom
+
+      const tgl = tanggal.toLocaleDateString("id-ID", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      });
+
+      return { ...item, tanggal_format: tgl };
+    });
+    res.status(200).json({ succeed: true, result: formatted });
+  });
+});
+
 // USER QUERY
 
 app.post("/api/upload-bayar", upload.single("file"), async (req, res) => {
@@ -184,7 +283,7 @@ app.post("/api/upload-bayar", upload.single("file"), async (req, res) => {
 app.get("/api/data-transaksi", (req, res) => {
   const { No_Pel } = req.query;
   try {
-    const sql = `SELECT a.noHP, a.nama, b.invoice, b.pemakaian, b.biaya, b.stat, b.No_Pel, DATE_FORMAT(b.waktu, '%M') AS bulan FROM users AS a JOIN transaksi AS b ON a.No_Pel = b.No_Pel WHERE a.No_Pel = ? ORDER BY b.waktu DESC`;
+    const sql = `SELECT a.noHP, a.nama, b.pem_awal, b.pem_akhir, b.invoice, b.pemakaian, b.biaya, b.stat, b.No_Pel, a.alamat, DATE_FORMAT(b.waktu, '%M') AS bulan FROM users AS a JOIN transaksi AS b ON a.No_Pel = b.No_Pel WHERE a.No_Pel = ? ORDER BY b.waktu DESC`;
 
     db.query(sql, [No_Pel], (err, result) => {
       if (err) {
@@ -229,8 +328,9 @@ app.post("/api/update-profile", async (req, res) => {
       res.status(200).json({ message: "Berhasil update data", succeed: true });
     });
   } else {
+    const hashedPass = await bcrypt.hash(pass, 10);
     const sql = `UPDATE users SET nama = ?, noHP = ?, pass = ?, alamat = ? WHERE noHP = ?`;
-    db.query(sql, [nama, noHP, pass, alamat, noHPprev], (err) => {
+    db.query(sql, [nama, noHP, hashedPass, alamat, noHPprev], (err) => {
       if (err) {
         return res
           .status(500)
@@ -240,6 +340,32 @@ app.post("/api/update-profile", async (req, res) => {
       res.status(200).json({ message: "Berhasil update data", succeed: true });
     });
   }
+});
+
+app.get("/api/history-by-NoPel", (req, res) => {
+  const { No_Pel } = req.query;
+
+  const sql = `SELECT * FROM history WHERE No_Pel = ?`;
+  db.query(sql, [No_Pel], (err, result) => {
+    if (err) {
+      return res
+        .status(500)
+        .json({ message: "Gagal terkoneksi", succeed: false });
+    }
+
+    const formatted = result.map((item) => {
+      const tanggal = new Date(item.tanggal); // ganti sesuai nama kolom
+
+      const tgl = tanggal.toLocaleDateString("id-ID", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      });
+
+      return { ...item, tanggal_format: tgl };
+    });
+    res.status(200).json({ succeed: true, result: formatted });
+  });
 });
 
 // ALL ROLE

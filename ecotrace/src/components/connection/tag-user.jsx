@@ -1,16 +1,21 @@
 import { useState } from "react";
 import ConfirmPay from "../btn-assets/confirm-pay";
+import CompStruk from "../btn-assets/comp-struk";
 
 const TagUser = ({ data }) => {
   const [bukti, setBukti] = useState(false);
   const [temp, setTemp] = useState({
     url: "",
     invoice: "",
+    No_Pel: "",
   });
+  const [struk, setStruk] = useState(false);
+  const [temp2, setTemp2] = useState({});
 
   return (
     <div className="w-full flex flex-col gap-2 justify-center items-center">
       {bukti && <ConfirmPay setBukti={setBukti} data={temp} />}
+      {struk && <CompStruk data={data} setStruk={setStruk} />}
       {Array.isArray(data) && data.length > 0
         ? data.map((item, index) => (
             <div
@@ -62,9 +67,11 @@ const TagUser = ({ data }) => {
                           setTemp({
                             url: item.url_bukti,
                             invoice: item.invoice,
+                            No_Pel: item.No_Pel,
                           });
                         } else if (item.stat === "lunas") {
-                          alert("lunas");
+                          setStruk(true);
+                          setTemp2(item);
                         } else {
                           alert("Nothing");
                         }

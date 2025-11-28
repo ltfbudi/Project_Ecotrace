@@ -55,6 +55,31 @@ const Pay = ({ who, setPay, setURL }) => {
       alert(temp.message);
     }
   };
+
+  const historyBayar = async (No_Pel) => {
+    if (!No_Pel) {
+      return alert("Gagal membuat tagihan");
+    }
+    const form = {
+      text: `Menyerahkan Bukti Transaksi untuk ID Pelanggan: ${No_Pel}`,
+      No_Pel: No_Pel,
+    };
+    const res = await fetch(`/api/his-acc-conf`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(form),
+    });
+
+    const temp = await res.json();
+    if (temp.succeed) {
+      console.log(temp.message);
+    } else {
+      console.log(temp.message);
+    }
+  };
+
   return (
     <div className="fixed inset-0 shadow-[0_0_6px_1px_rgba(0,0,0,0.2)] bg-black/50 z-50 flex w-full justify-center items-center overflow-y-auto">
       <div className="w-3/5 bg-white rounded-lg p-5">
@@ -122,7 +147,10 @@ const Pay = ({ who, setPay, setURL }) => {
           </button>
         </div>
         <button
-          onClick={handleUpload}
+          onClick={() => {
+            handleUpload();
+            historyBayar(who.No_Pel);
+          }}
           className="font-bold mt-4 shadow-[0_0_6px_1px_rgba(0,0,0,0.2)] w-fit px-6 rounded-full py-1 bg-navBase text-white transform hover:-translate-x-0.5 hover:-translate-y-0.5 transition duration-300"
         >
           Upload Foto

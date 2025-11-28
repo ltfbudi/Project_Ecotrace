@@ -46,6 +46,30 @@ const CreateTag = ({ setCreate }) => {
     }
   };
 
+  const history = async (No_Pel, bulan) => {
+    if (!No_Pel || !bulan) {
+      return alert("Gagal membuat tagihan");
+    }
+    const form = {
+      text: `Membuat tagihan pada ${bulan}`,
+      No_Pel: No_Pel,
+    };
+    const res = await fetch(`/api/his-acc-conf`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(form),
+    });
+
+    const temp = await res.json();
+    if (temp.succeed) {
+      console.log(temp.message);
+    } else {
+      console.log(temp.message);
+    }
+  };
+
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex justify-center items-center overflow-y-auto w-full">
       <div className="bg-white w-3/5 px-5 py-4 rounded-xl">
@@ -137,6 +161,9 @@ const CreateTag = ({ setCreate }) => {
               />
             </div>
             <button
+              onClick={() => {
+                history(form.No_Pel, form.time);
+              }}
               type="submit"
               className="bg-linear-to-br from-nav to-gray-100 w-22 shadow-[0_0_6px_1px_rgba(0,0,0,0.2)] rounded-full py-1 text-white font-bold text-sm transform hover:-translate-x-0.5 hover:-translate-y-0.5 transition duration-300"
             >

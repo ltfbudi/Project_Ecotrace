@@ -5,6 +5,8 @@ import DashAdm from "./assets/dash-admin";
 import NotFound from "./assets/notFound";
 import TagAdm from "./assets/tag-admin";
 import CompProfile from "./assets/comp-profile";
+import RiwAdmin from "./assets/riw-admin";
+import RiwUser from "./assets/riw-user";
 
 const TheApp = ({ page, user }) => {
   const [create, setCreate] = useState(false);
@@ -27,11 +29,11 @@ const TheApp = ({ page, user }) => {
                   width="14"
                   height="14"
                   fill="currentColor"
-                  class="bi bi-plus-lg font-bold"
+                  className="bi bi-plus-lg font-bold"
                   viewBox="0 1 16 16"
                 >
                   <path
-                    fill-rule="evenodd"
+                    fillRule="evenodd"
                     d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"
                   />
                 </svg>
@@ -59,7 +61,7 @@ const TheApp = ({ page, user }) => {
           ) : page === "Tagihan" ? (
             <CompTagihan user={user} />
           ) : page === "Riwayat" ? (
-            ""
+            <RiwUser user={user} />
           ) : page === "Profile" ? (
             <CompProfile user={user} />
           ) : (
@@ -70,6 +72,8 @@ const TheApp = ({ page, user }) => {
             <DashAdm user={user} />
           ) : page === "Tagihan" ? (
             <TagAdm user={user} create={create} setCreate={setCreate} />
+          ) : page === "Riwayat" ? (
+            <RiwAdmin />
           ) : (
             ""
           )

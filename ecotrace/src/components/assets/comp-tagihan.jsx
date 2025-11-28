@@ -11,6 +11,7 @@ const CompTagihan = ({ user }) => {
     biaya: "",
   });
 
+  const [strukAcc, setAcc] = useState(null);
   const [struk, setStruk] = useState(false);
   const [url, setURL] = useState("");
 
@@ -27,7 +28,7 @@ const CompTagihan = ({ user }) => {
   }, []);
   return (
     <div className="w-full flex flex-col gap-2 justify-center items-center">
-      {struk && <CompStruk setStruk={setStruk} />}
+      {struk && <CompStruk data={strukAcc} setStruk={setStruk} />}
       {pay && <Pay who={who} setPay={setPay} setURL={setURL} />}
       {user.verif === "no" ? (
         <div className="px-8 py-5 shadow-[0_0_6px_1px_rgba(0,0,0,0.2)] rounded-2xl w-3/5">
@@ -35,10 +36,7 @@ const CompTagihan = ({ user }) => {
             Akun belum diverifikasi Admin
           </div>
         </div>
-      ) : // <div className="flex justify-center items-center w-full h-20 text-center font-Inter text-3xl text-gray-400 italic">
-      //   Akun belum diverifikasi Admin
-      // </div>
-      Array.isArray(data) && data.length > 0 ? (
+      ) : Array.isArray(data) && data.length > 0 ? (
         data.map((item, index) => (
           <div
             key={index}
@@ -89,11 +87,13 @@ const CompTagihan = ({ user }) => {
                         invo: item.invoice,
                         pemakaian: item.pemakaian,
                         biaya: item.biaya,
+                        No_Pel: item.No_Pel,
                       });
                     } else if (item.stat === "pending") {
                       alert("pending");
                     } else if (item.stat === "lunas") {
                       setStruk(true);
+                      setAcc(item);
                     } else {
                       alert("Nothing");
                     }
@@ -103,7 +103,7 @@ const CompTagihan = ({ user }) => {
                   {item.stat === "nunggak"
                     ? "Bayar Tagihan"
                     : item.stat === "pending"
-                    ? "Unduh Bukti"
+                    ? "Lihat Bukti"
                     : item.stat === "lunas"
                     ? "Unduh Struk"
                     : ""}

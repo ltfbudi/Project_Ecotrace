@@ -5,6 +5,90 @@ const DashAdm = ({ user }) => {
   const [noHP, setNo] = useState("");
   const [confirm, setConfirm] = useState(false);
 
+  const decline = async (noHP) => {
+    const res = await fetch(`/api/decline-acc/${noHP}`, {
+      method: "DELETE",
+    });
+
+    const temp = await res.json();
+    if (temp.succeed) {
+      alert(temp.message);
+      window.location.reload();
+    } else {
+      alert(temp.message);
+      window.location.reload();
+    }
+  };
+
+  const deleteAcc = async (No_Pel) => {
+    const res = await fetch(`/api/delete-trans-acc/${No_Pel}`, {
+      method: "DELETE",
+    });
+
+    const temp = await res.json();
+    if (temp.succeed) {
+      const res = await fetch(`/api/delete-acc/${No_Pel}`, {
+        method: "DELETE",
+      });
+
+      const temp = await res.json();
+      if (temp.succeed) {
+        alert(temp.message);
+        window.location.reload();
+      } else {
+        alert(temp.message);
+        window.location.reload();
+      }
+    }
+  };
+
+  const historyDelete = async (No_Pel) => {
+    if (!No_Pel) {
+      return alert("Gagal membuat tagihan");
+    }
+    const form = {
+      text: `Menghapus Akun dengan ID Pelanggan ${No_Pel}`,
+      No_Pel: No_Pel,
+    };
+    const res = await fetch(`/api/his-acc-conf`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(form),
+    });
+
+    const temp = await res.json();
+    if (temp.succeed) {
+      console.log(temp.message);
+    } else {
+      console.log(temp.message);
+    }
+  };
+
+  const history = async (noHP) => {
+    const text = `Konfirmasi Akun dengan Nomor Telepon ${noHP}`;
+
+    const form = {
+      text: text,
+    };
+    const res = await fetch(`/api/his-confirm`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(form),
+    });
+
+    const temp = await res.json();
+
+    if (temp.succeed) {
+      console.log(temp.message);
+    } else {
+      console.log(temp.message);
+    }
+  };
+
   useEffect(() => {
     const Get = async (setData) => {
       const res = await fetch("/api/get-user-all");
@@ -62,6 +146,7 @@ const DashAdm = ({ user }) => {
                           onClick={() => {
                             setConfirm(true);
                             setNo(item.noHP);
+                            history(item.noHP);
                           }}
                           className="border-black"
                         >
@@ -76,7 +161,12 @@ const DashAdm = ({ user }) => {
                             <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z" />
                           </svg>
                         </button>
-                        <button onClick={() => {}} className="border-black">
+                        <button
+                          onClick={() => {
+                            decline(item.noHP);
+                          }}
+                          className="border-black"
+                        >
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="16"
@@ -92,7 +182,8 @@ const DashAdm = ({ user }) => {
                     ) : (
                       <button
                         onClick={() => {
-                          alert("Nyala");
+                          historyDelete(item.No_Pel);
+                          deleteAcc(item.No_Pel);
                         }}
                         className="border-black"
                       >
