@@ -23,18 +23,20 @@ const CompStruk = ({ data, setStruk }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex justify-center items-center overflow-y-auto w-full">
+    <div className="fixed inset-0 bg-black/50 z-50 flex justify-center items-center overflow-y-auto w-full p-3">
       <div
-        className="w-2/5 rounded-xl py-2 px-3"
-        style={{ background: "white", color: "black" }}
+        className="
+      w-[90%] sm:w-[70%] md:w-[50%] lg:w-[40%] xl:w-[30%]
+      rounded-xl py-4 px-4 bg-white text-black
+    "
       >
         <div className="w-full">
           <div className="flex w-full justify-end">
             <button onClick={() => setStruk(false)}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
+                width="22"
+                height="22"
                 fill="currentColor"
                 className="bi bi-x text-gray-500"
                 viewBox="0 0 16 16"
@@ -44,11 +46,12 @@ const CompStruk = ({ data, setStruk }) => {
             </button>
           </div>
 
-          <div className="px-5" ref={pdfRef}>
-            <h1 className="font-bold text-center text-2xl mb-2">
+          <div className="px-2 sm:px-4" ref={pdfRef}>
+            <h1 className="font-bold text-center text-xl sm:text-2xl mb-3">
               KSM Banyu Bening Tagihan Bulanan Air Bersih
             </h1>
-            <table className="mt-3">
+
+            <table className="mt-3 w-full text-sm sm:text-base">
               <tbody>
                 <tr>
                   <td className="w-1/3">ID Pelanggan</td>
@@ -99,7 +102,8 @@ const CompStruk = ({ data, setStruk }) => {
             </table>
           </div>
         </div>
-        <div className="w-full flex justify-center mt-4 mb-4">
+
+        <div className="w-full flex justify-center mt-4 mb-3">
           <button
             onClick={downloadPDF}
             className="font-bold shadow-[0_0_6px_1px_rgba(0,0,0,0.2)] px-6 rounded-full py-2 bg-navBase text-white"

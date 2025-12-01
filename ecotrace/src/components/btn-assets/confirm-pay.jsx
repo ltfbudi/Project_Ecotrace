@@ -39,7 +39,7 @@ const ConfirmPay = ({ setBukti, data }) => {
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex justify-center items-center overflow-y-auto w-full">
-      <div className="bg-white rounded-xl w-3/5 px-5 py-4">
+      <div className="bg-white rounded-xl w-4/5 sm:w-3/5 px-5 py-4">
         <div className="flex w-full justify-end">
           <button
             onClick={() => {
@@ -58,11 +58,11 @@ const ConfirmPay = ({ setBukti, data }) => {
             </svg>
           </button>
         </div>
-        <h1 className="text-center text-2xl text-gray-500 font-Inter">
+        <h1 className="text-center text-lg md:text-2xl text-gray-500 font-Inter">
           Bukti Pembayaran Pelanggan
         </h1>
         <div className="w-full flex justify-center">
-          <div className="w-60 h-80 flex justify-center items-center align-middle ">
+          <div className="w-80 h-70 sm:h-80 flex justify-center items-center align-middle ">
             <img
               src={data.url}
               alt="preview"

@@ -6,6 +6,8 @@ const RegisLogic = (con, setName) => {
     nama: "",
     pass: "",
     passConfirm: "",
+    email: "",
+    alamat: "",
   });
 
   const change = (e) => {

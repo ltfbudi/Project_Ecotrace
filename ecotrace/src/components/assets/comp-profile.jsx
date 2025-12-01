@@ -43,55 +43,73 @@ const CompProfile = ({ user }) => {
   };
 
   return (
-    <div className="flex flex-col justify-center items-center w-2/5 p-5">
+    <div
+      className="flex flex-col justify-center items-center 
+                  w-full sm:w-3/4 md:w-2/3 lg:w-2/5 
+                  p-3 sm:p-5"
+    >
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        width="150"
-        height="150"
-        fill="currentColor"
-        className="bi bi-person-fill text-gray-500"
+        width="120"
+        height="120"
+        className="text-gray-500 mb-3 sm:mb-5"
         viewBox="0 0 16 16"
+        fill="currentColor"
       >
         <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6" />
       </svg>
-      <form onSubmit={handleSubmit} className="flex flex-col gap-2 w-4/5">
+
+      <form
+        onSubmit={handleSubmit}
+        className="flex flex-col gap-3 w-full sm:w-4/5"
+      >
         <input
           type="text"
           name="nama"
           value={form.nama}
           onChange={change}
           placeholder="Nama Lengkap"
-          className="w-full border border-gray-400 rounded-full text-gray-800 placeholder-gray-300 h-8 px-5 focus:rounded-full focus:outline-gray-500"
+          className="w-full border border-gray-400 rounded-full text-gray-800 
+                   placeholder-gray-300 h-10 sm:h-11 px-4"
         />
+
         <input
           type="text"
           name="noHP"
           value={form.noHP}
           onChange={change}
           placeholder="Nomor Telepon"
-          className="w-full border border-gray-400 rounded-full text-gray-800 placeholder-gray-300 h-8 px-5 focus:rounded-full focus:outline-gray-500"
+          className="w-full border border-gray-400 rounded-full text-gray-800 
+                   placeholder-gray-300 h-10 sm:h-11 px-4"
         />
+
         <input
           type="text"
           name="pass"
           value={form.pass}
           onChange={change}
           placeholder="Password"
-          className="w-full border border-gray-400 rounded-full text-gray-800 placeholder-gray-300 h-8 px-5 focus:rounded-full focus:outline-gray-500"
+          className="w-full border border-gray-400 rounded-full text-gray-800 
+                   placeholder-gray-300 h-10 sm:h-11 px-4"
         />
+
         <textarea
           name="alamat"
           value={form.alamat}
           onChange={change}
           placeholder="Alamat"
-          className="w-full border border-gray-400 rounded-lg text-gray-800 placeholder-gray-300 h-20 px-5 focus:rounded-lg focus:outline-gray-500"
-        />
+          className="w-full border border-gray-400 rounded-lg text-gray-800 
+                   placeholder-gray-300 h-24 px-4 py-2"
+        ></textarea>
+
         <div className="w-full flex justify-center items-center">
           <button
             type="submit"
-            className="bg-linear-to-br from-nav to-gray-100 w-32 shadow-[0_0_6px_1px_rgba(0,0,0,0.2)] rounded-full py-2 text-white font-bold text-md transform hover:-translate-x-0.5 hover:-translate-y-0.5 transition duration-300"
+            className="bg-linear-to-br from-nav to-gray-100 w-40 shadow-lg 
+                     rounded-full py-2 text-white font-bold text-md 
+                     transition transform hover:-translate-y-0.5"
           >
-            simpan
+            Simpan
           </button>
         </div>
       </form>

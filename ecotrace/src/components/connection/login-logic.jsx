@@ -32,6 +32,7 @@ const LoginLogic = (setUser) => {
       alert(`${data.message}`);
       if (data.succeed) {
         navigate("/dashboard");
+        window.location.reload();
         setUser(data.user);
       }
     } catch (err) {

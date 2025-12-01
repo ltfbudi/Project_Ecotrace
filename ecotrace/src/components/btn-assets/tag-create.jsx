@@ -1,6 +1,9 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 
-const CreateTag = ({ setCreate }) => {
+const CreateTag = ({ setCreate, user }) => {
+  const fileRef = useRef(null);
+  const [preview, setPreview] = useState(null);
+  const [file, setFile] = useState(null);
   const [form, setForm] = useState({
     invoice: "",
     No_Pel: "",
@@ -47,13 +50,13 @@ const CreateTag = ({ setCreate }) => {
   };
 
   const history = async (No_Pel, bulan) => {
-    if (!No_Pel || !bulan) {
-      return alert("Gagal membuat tagihan");
-    }
+    if (!No_Pel || !bulan) return alert("Gagal membuat tagihan");
+
     const form = {
       text: `Membuat tagihan pada ${bulan}`,
       No_Pel: No_Pel,
     };
+
     const res = await fetch(`/api/his-acc-conf`, {
       method: "POST",
       headers: {
@@ -63,115 +66,260 @@ const CreateTag = ({ setCreate }) => {
     });
 
     const temp = await res.json();
-    if (temp.succeed) {
-      console.log(temp.message);
-    } else {
-      console.log(temp.message);
-    }
+    console.log(temp.message);
   };
 
-  return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex justify-center items-center overflow-y-auto w-full">
-      <div className="bg-white w-3/5 px-5 py-4 rounded-xl">
-        <div className="flex w-full justify-end">
-          <button
-            onClick={() => {
-              setCreate(false);
-            }}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              fill="currentColor"
-              className="bi bi-x text-gray-500"
-              viewBox="0 0 16 16"
-            >
-              <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
-            </svg>
-          </button>
-        </div>
-        <h1 className="text-xl text-navBase font-bold font-Inter mb-1">
-          Create Tagihan
-        </h1>
+  const handleChoose = () => {
+    fileRef.current.click();
+  };
 
-        <form onSubmit={handleSubmit} className="flex flex-col font-Inter">
-          <label htmlFor="invoice">Invoice</label>
-          <input
-            type="text"
-            name="invoice"
-            value={form.invoice}
-            onChange={change}
-            className="w-full border border-gray-400 rounded-full text-gray-800 placeholder-gray-300 h-9 px-5 focus:rounded-full focus:outline-gray-500 mb-2"
-            placeholder="Invoice"
-          />
-          <label htmlFor="id_pel">ID Pelanggan</label>
-          <input
-            type="text"
-            name="No_Pel"
-            value={form.No_Pel}
-            onChange={change}
-            className="w-full border border-gray-400 rounded-full text-gray-800 placeholder-gray-300 h-9 px-5 focus:rounded-full focus:outline-gray-500 mb-2"
-            placeholder="ID Pelanggan"
-          />
-          <label htmlFor="time">Waktu</label>
-          <input
-            type="date"
-            name="time"
-            value={form.time}
-            onChange={change}
-            className="w-full border border-gray-400 rounded-full text-gray-800 placeholder-gray-300 h-9 px-5 focus:rounded-full focus:outline-gray-500 mb-2"
-            placeholder="Waktu Pembuatan Tagihan"
-          />
-          <div className="w-3/5 flex flex-col">
-            <label htmlFor="awal">Pemakaian Awal</label>
-            <input
-              type="text"
-              name="pem_awal"
-              value={form.pem_awal}
-              onChange={change}
-              className="w-full border border-gray-400 rounded-full text-gray-800 placeholder-gray-300 h-9 px-5 focus:rounded-full focus:outline-gray-500 mb-2"
-              placeholder="Pemakaian Awal"
-            />
-            <label htmlFor="akhir">Pemakaian Akhir</label>
-            <input
-              type="text"
-              name="pem_akhir"
-              value={form.pem_akhir}
-              onChange={change}
-              className="w-full border border-gray-400 rounded-full text-gray-800 placeholder-gray-300 h-9 px-5 focus:rounded-full focus:outline-gray-500 mb-2"
-              placeholder="Pemakaian Akhir"
-            />
-            <div className="flex gap-1 items-center">
-              <label htmlFor="bayar" className="w-1/5">
-                Biaya Total
-              </label>
-              <input
-                type="text"
-                name="biaya"
-                value={
-                  "RP " +
-                  Number(
-                    (form.pem_akhir - form.pem_awal) * 10000
-                  ).toLocaleString("id-ID")
-                }
-                className="w-4/5 border border-gray-400 rounded-full text-gray-800 placeholder-gray-300 h-9 px-5 focus:rounded-full focus:outline-gray-500 mb-2"
-                disabled
-                placeholder="Rp 0"
-              />
-            </div>
-            <button
-              onClick={() => {
-                history(form.No_Pel, form.time);
-              }}
-              type="submit"
-              className="bg-linear-to-br from-nav to-gray-100 w-22 shadow-[0_0_6px_1px_rgba(0,0,0,0.2)] rounded-full py-1 text-white font-bold text-sm transform hover:-translate-x-0.5 hover:-translate-y-0.5 transition duration-300"
-            >
-              Create
+  const handleFileChange = (e) => {
+    const selected = e.target.files[0];
+    if (!selected) return;
+
+    setFile(selected);
+    setPreview(URL.createObjectURL(selected)); // preview lokal
+  };
+
+  const handleUpload = async () => {};
+
+  return (
+    <div className="fixed inset-0 bg-black/50 z-50 flex justify-center items-center overflow-y-auto py-6">
+      {user.role === "user" ? (
+        <div className="max-h-[400px] overflow-y-auto bg-white w-11/12 sm:w-4/5 md:w-3/5 lg:w-2/5 px-6 py-5 rounded-xl shadow-lg text-sm">
+          <div className="flex justify-end mb-2">
+            <button onClick={() => setCreate(false)}>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="22"
+                height="22"
+                fill="currentColor"
+                className="bi bi-x text-gray-500"
+                viewBox="0 0 16 16"
+              >
+                <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
+              </svg>
             </button>
           </div>
-        </form>
-      </div>
+
+          <h1 className="text-xl text-navBase font-bold font-Inter mb-3">
+            Create Tagihan
+          </h1>
+
+          <form
+            onSubmit={handleSubmit}
+            className="flex flex-col gap-2 font-Inter"
+          >
+            <div>
+              <label>ID Pelanggan</label>
+              <input
+                type="text"
+                name="No_Pel"
+                value={form.No_Pel}
+                onChange={change}
+                className="w-full border border-gray-400 rounded-full h-9 px-4"
+                placeholder="ID Pelanggan"
+              />
+            </div>
+
+            <div>
+              <label>Waktu</label>
+              <input
+                type="date"
+                name="time"
+                value={form.time}
+                onChange={change}
+                className="w-full border border-gray-400 rounded-full h-9 px-4"
+              />
+            </div>
+            <div className="flex flex-row w-full">
+              <div className="w-3/6 flex flex-col">
+                <label>Pemakaian Awal</label>
+                <input
+                  type="text"
+                  name="pem_awal"
+                  value={form.pem_awal}
+                  onChange={change}
+                  className="w-full border border-gray-400 rounded-full h-9 px-4"
+                  placeholder="Pemakaian Awal"
+                />
+
+                <label className="mt-2">Pemakaian Akhir</label>
+                <input
+                  type="text"
+                  name="pem_akhir"
+                  value={form.pem_akhir}
+                  onChange={change}
+                  className="w-full border border-gray-400 rounded-full h-9 px-4"
+                  placeholder="Pemakaian Akhir"
+                />
+              </div>
+              <div className="flex flex-col w-3/6">
+                <label>Total Pemakaian</label>
+                <input
+                  type="text"
+                  disabled
+                  value={form.pem_akhir - form.pem_awal}
+                  className="w-full border border-gray-400 rounded-full h-9 px-4"
+                />
+                <label className="mt-2">Biaya Total</label>
+                <input
+                  type="text"
+                  disabled
+                  value={
+                    "RP " +
+                    Number(
+                      (form.pem_akhir - form.pem_awal) * 10000
+                    ).toLocaleString("id-ID")
+                  }
+                  className="w-full border border-gray-400 rounded-full h-9 px-4"
+                />
+              </div>
+            </div>
+            {preview ? (
+              <div className="w-full flex justify-center">
+                <div className="w-50 h-60 flex justify-center items-center align-middle ">
+                  <img
+                    src={preview}
+                    alt="preview"
+                    className="w-full h-full align-middle"
+                  />
+                </div>
+              </div>
+            ) : (
+              <div className="w-full flex justify-center">
+                <div className="w-50 h-60 flex justify-center items-center align-middle ">
+                  <img
+                    src={``}
+                    alt="preview"
+                    className="w-full h-full align-middle"
+                  />
+                </div>
+              </div>
+            )}
+            <input
+              type="file"
+              ref={fileRef}
+              style={{ display: "none" }}
+              accept="image/*"
+              onChange={handleFileChange}
+            />
+            <div className="flex w-full justify-center">
+              <h1
+                onClick={handleChoose}
+                className="font-bold mt-4 shadow-[0_0_6px_1px_rgba(0,0,0,0.2)] w-fit px-6 rounded-full py-1 text-navBase transform hover:-translate-x-0.5 hover:-translate-y-0.5 transition duration-300"
+              >
+                Pilih Foto
+              </h1>
+            </div>
+            <div className="w-full flex justify-center">
+              <button
+                onClick={() => history(form.No_Pel, form.time)}
+                type="submit"
+                className="bg-linear-to-br from-navBase to-nav mt-4 w-fit px-6 py-1 text-white font-bold rounded-full shadow-md hover:-translate-y-0.5 active:scale-95 transition"
+              >
+                Create
+              </button>
+            </div>
+          </form>
+        </div>
+      ) : user.role === "admin" ? (
+        <div className="bg-white w-11/12 sm:w-4/5 md:w-3/5 lg:w-2/5 px-6 py-5 rounded-xl shadow-lg">
+          <div className="flex justify-end mb-2">
+            <button onClick={() => setCreate(false)}>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="22"
+                height="22"
+                fill="currentColor"
+                className="bi bi-x text-gray-500"
+                viewBox="0 0 16 16"
+              >
+                <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
+              </svg>
+            </button>
+          </div>
+
+          <h1 className="text-xl text-navBase font-bold font-Inter mb-3">
+            Create Tagihan
+          </h1>
+
+          <form
+            onSubmit={handleSubmit}
+            className="flex flex-col gap-2 font-Inter"
+          >
+            <div>
+              <label>ID Pelanggan</label>
+              <input
+                type="text"
+                name="No_Pel"
+                value={form.No_Pel}
+                onChange={change}
+                className="w-full border border-gray-400 rounded-full h-9 px-4"
+                placeholder="ID Pelanggan"
+              />
+            </div>
+
+            <div>
+              <label>Waktu</label>
+              <input
+                type="date"
+                name="time"
+                value={form.time}
+                onChange={change}
+                className="w-full border border-gray-400 rounded-full h-9 px-4"
+              />
+            </div>
+
+            <div className="w-full flex flex-col sm:w-4/5">
+              <label>Pemakaian Awal</label>
+              <input
+                type="text"
+                name="pem_awal"
+                value={form.pem_awal}
+                onChange={change}
+                className="w-full border border-gray-400 rounded-full h-9 px-4"
+                placeholder="Pemakaian Awal"
+              />
+
+              <label className="mt-2">Pemakaian Akhir</label>
+              <input
+                type="text"
+                name="pem_akhir"
+                value={form.pem_akhir}
+                onChange={change}
+                className="w-full border border-gray-400 rounded-full h-9 px-4"
+                placeholder="Pemakaian Akhir"
+              />
+
+              <div className="flex items-center gap-2 mt-3">
+                <label className="w-1/3 sm:w-1/5">Biaya Total</label>
+                <input
+                  type="text"
+                  disabled
+                  value={
+                    "RP " +
+                    Number(
+                      (form.pem_akhir - form.pem_awal) * 10000
+                    ).toLocaleString("id-ID")
+                  }
+                  className="w-2/3 sm:w-4/5 border border-gray-400 rounded-full h-9 px-4"
+                />
+              </div>
+
+              <button
+                onClick={() => history(form.No_Pel, form.time)}
+                type="submit"
+                className="bg-linear-to-br from-navBase to-nav mt-4 w-fit px-6 py-1 text-white font-bold rounded-full shadow-md hover:-translate-y-0.5 active:scale-95 transition"
+              >
+                Create
+              </button>
+            </div>
+          </form>
+        </div>
+      ) : (
+        ""
+      )}
     </div>
   );
 };

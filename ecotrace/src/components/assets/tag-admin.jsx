@@ -17,8 +17,8 @@ const TagAdm = ({ user, create, setCreate }) => {
     Get();
   }, []);
   return (
-    <div className="w-full flex justify-center">
-      {create && <CreateTag setCreate={setCreate} />}
+    <div className="w-full flex justify-center px-2 sm:px-4">
+      {create && <CreateTag setCreate={setCreate} user={user} />}
       <TagUser data={data} />
     </div>
   );

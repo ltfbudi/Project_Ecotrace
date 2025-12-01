@@ -10,13 +10,16 @@ import {
 import TheApp from "./components/theApp";
 
 function Layout({ children }) {
+  const [user, setUser] = useState(() => {
+    const saved = localStorage.getItem("user");
+    return saved ? JSON.parse(saved) : null;
+  });
   const location = useLocation();
   const hide = ["/"];
   const show = !hide.includes(location.pathname);
-
   return (
     <div>
-      {show && <Navbar />}
+      {show && <Navbar user={user} />}
       <div>{children}</div>
     </div>
   );
@@ -53,6 +56,10 @@ function App() {
             <Route
               path="/riwayat"
               element={<TheApp page={"Riwayat"} user={user} />}
+            />
+            <Route
+              path="/pengajuan"
+              element={<TheApp page={"Pengajuan"} user={user} />}
             />
             <Route
               path="/profile"

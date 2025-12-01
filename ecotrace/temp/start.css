@@ -11,4 +11,6 @@
 
   --font-mukta: "Mukta Mahee", sans;
   --font-Inter: "Inter", sans;
+
+  --breakpoint-xs: 400px;
 }
