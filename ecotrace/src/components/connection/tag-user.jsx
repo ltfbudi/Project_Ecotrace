@@ -7,7 +7,7 @@ const TagUser = ({ data }) => {
   const [temp, setTemp] = useState({
     url: "",
     invoice: "",
-    No_Pel: "",
+    id_pel: "",
   });
   const [struk, setStruk] = useState(false);
   const [strukAcc, setStrukAcc] = useState(null);
@@ -40,7 +40,7 @@ const TagUser = ({ data }) => {
                   <h3 className="font-bold">{item.pemakaian + " m³"}</h3>
 
                   <h3 className="mt-2 md:mt-4">ID Pelanggan</h3>
-                  <h3 className="font-bold">{item.No_Pel}</h3>
+                  <h3 className="font-bold">{item.id_pel}</h3>
                 </div>
 
                 {/* Kolom 3 */}
@@ -74,7 +74,7 @@ const TagUser = ({ data }) => {
                           setTemp({
                             url: item.url_bukti,
                             invoice: item.invoice,
-                            No_Pel: item.No_Pel,
+                            id_pel: item.id_pel,
                           });
                         } else if (item.stat === "lunas") {
                           setStruk(true);

@@ -2,7 +2,7 @@ import { useState } from "react";
 
 const Confirm = ({ noHP, setConfirm }) => {
   const [form, setForm] = useState({
-    No_Pel: "",
+    id_pel: "",
   });
 
   const change = (e) => {
@@ -30,10 +30,21 @@ const Confirm = ({ noHP, setConfirm }) => {
 
       const data = await res.json();
       if (data.succeed) {
-        alert("Berhasil konfirmasi akun pengguna!");
-        setTimeout(() => {
+        const res2 = await fetch("/api/tambah-pemakaian-akhir", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ id_pel: form.id_pel }),
+        });
+
+        const temp2 = await res2.json();
+        if (temp2.succeed) {
+          alert("Berhasil konfirmasi akun pengguna!");
           window.location.reload();
-        }, 1000);
+        } else {
+          alert(temp2.message);
+        }
       } else {
       }
     } catch (err) {
@@ -68,8 +79,8 @@ const Confirm = ({ noHP, setConfirm }) => {
         <form onSubmit={handleSubmit} className="flex flex-col gap-1 mt-5">
           <input
             type="text"
-            name="No_Pel"
-            value={form.No_Pel}
+            name="id_pel"
+            value={form.id_pel}
             onChange={change}
             placeholder="ID Pelanggan"
             className="w-full border border-gray-400 rounded-full text-gray-800 placeholder-gray-300 h-11 px-5 focus:rounded-full focus:outline-gray-500"

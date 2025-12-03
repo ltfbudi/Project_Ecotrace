@@ -4,15 +4,15 @@ const CompDash = ({ user }) => {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    const Get = async (No_Pel) => {
-      const res = await fetch(`/api/data-transaksi?No_Pel=${No_Pel}`);
+    const Get = async (id_pel) => {
+      const res = await fetch(`/api/data-transaksi?id_pel=${id_pel}`);
       const temp = await res.json();
 
       if (temp.succeed) {
         setData(temp.data);
       }
     };
-    Get(user.No_Pel);
+    Get(user.id_pel);
   }, []);
 
   return (

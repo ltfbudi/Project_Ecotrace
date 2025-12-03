@@ -1,105 +1,106 @@
-// user.length > 0 ? (
-//                 user.map((item, index) => (
-//                   <tr
-//                     key={index}
-//                     className="border-b text-center hover:bg-gray-50"
-//                   >
-//                     <td className="px-4 py-2">{item.noHP}</td>
-//                     <td className="px-4 py-2">{item.pemakaian}</td>
-//                     <td className="px-4 py-2">
-//                       Rp {Number(item.biaya).toLocaleString("id-ID")}
-//                     </td>
-//                     <td
-//                       className={`px-4 py-2 font-medium ${
-//                         item.stat === "lunas"
-//                           ? "text-green-600"
-//                           : item.stat === "pending"
-//                           ? "text-yellow-400"
-//                           : "text-red-600"
-//                       }`}
-//                     >
-//                       {item.stat}
-//                     </td>
-//                   </tr>
-//                 ))
-//               ) : (
-//                 <tr>
-//                   <td
-//                     colSpan="4"
-//                     className="px-4 py-3 text-gray-400 text-sm italic"
-//                   >
-//                     Tidak ada data transaksi
+// {/* <div className="p-3 sm:p-4">
+//       {confirm && <Confirm noHP={noHP} setConfirm={setConfirm} />}
+
+//       {/* WRAPPER RESPONSIVE */}
+//       <div className="w-full overflow-x-auto shadow-sm rounded-xl overflow-hidden border">
+//         {/* TABEL */}
+//         <table className="w-full border-collapse md:min-w-[600px] lg:min-w-[900px] sm:min-w-full">
+//           <thead className="bg-gray-100 text-gray-700 text-center text-xs sm:text-sm">
+//             <tr>
+//               <th className="sm:px-2 py-2 font-semibold border-b">Nama</th>
+//               <th className="sm:px-2 py-2 font-semibold border-b">
+//                 No. Telepon
+//               </th>
+//               <th className="sm:px-2 py-2 font-semibold border-b">Alamat</th>
+//               <th className="sm:px-2 py-2 font-semibold border-b">Aksi</th>
+//             </tr>
+//           </thead>
+
+//           <tbody className="text-gray-700 text-center text-xs sm:text-sm">
+//             {Array.isArray(data) && data.length > 0 ? (
+//               data.map((item, index) => (
+//                 <tr key={index} className="hover:bg-gray-50">
+//                   <td className="xs:px-1 sm:px-2 py-2 border-b">{item.nama}</td>
+//                   <td className="xs:px-1 sm:px-2 py-2 border">{item.noHP}</td>
+
+//                   {/* ALAMAT */}
+//                   <td className="xs:px-1 sm:px-2 py-2 max-w-[150px] truncate sm:whitespace-normal border">
+//                     {item.alamat || "-"}
+//                   </td>
+
+//                   {/* AKSI */}
+//                   <td className="sm:px-2 py-2 border-b">
+//                     <div className="flex justify-center gap-2 sm:gap-3">
+//                       {item.verif === "no" ? (
+//                         <>
+//                           {/* CHECK */}
+//                           <button
+//                             onClick={() => {
+//                               setConfirm(true);
+//                               setNo(item.noHP);
+//                               history(item.noHP);
+//                             }}
+//                           >
+//                             <svg
+//                               xmlns="http://www.w3.org/2000/svg"
+//                               width="16"
+//                               height="16"
+//                               fill="currentColor"
+//                               className="bi bi-check2 text-green-500"
+//                               viewBox="0 0 16 16"
+//                             >
+//                               <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0" />
+//                             </svg>
+//                           </button>
+
+//                           {/* TRASH */}
+//                           <button onClick={() => decline(item.noHP)}>
+//                             <svg
+//                               xmlns="http://www.w3.org/2000/svg"
+//                               width="16"
+//                               height="16"
+//                               fill="currentColor"
+//                               className="bi bi-trash3 text-red-500"
+//                               viewBox="0 0 16 16"
+//                             >
+//                               <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5" />
+//                             </svg>
+//                           </button>
+//                         </>
+//                       ) : (
+//                         <button
+//                           onClick={() => {
+//                             historyDelete(item.id_pel);
+//                             deleteAcc(item.id_pel);
+//                           }}
+//                         >
+//                           <svg
+//                             xmlns="http://www.w3.org/2000/svg"
+//                             width="16"
+//                             height="16"
+//                             fill="currentColor"
+//                             className="bi bi-trash3 text-red-500"
+//                             viewBox="0 0 16 16"
+//                           >
+//                             <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5" />
+//                           </svg>
+//                         </button>
+//                       )}
+//                     </div>
 //                   </td>
 //                 </tr>
-//               )
-//             )
-
-// user.length > 0 ? (
-//           user.map((item, index) => (
-//             <div
-//               key={index}
-//               className={`${
-//                 index === 0 ? "" : "mt-5"
-//               } px-8 py-5 shadow-[0_0_6px_1px_rgba(0,0,0,0.2)] rounded-2xl`}
-//             >
-//               <h1 className="text-navBase font-bold text-lg">Januari</h1>
-//               <div className="flex w-full">
-//                 <div className="flex flex-col w-1/3">
-//                   <h3 className="mt-6">Invoice</h3>
-//                   <h3 className="font-bold">No.Pelanggan</h3>
-
-//                   <h3 className="mt-4">Nama Pelanggan</h3>
-//                   <h3 className="font-bold">{item.nama}</h3>
-//                 </div>
-//                 <div className="flex flex-col w-1/3">
-//                   <h3 className="mt-6">Pemakaian</h3>
-//                   <h3 className="font-bold">{item.pemakaian}</h3>
-
-//                   <h3 className="mt-4">No. Pelanggan</h3>
-//                   <h3 className="font-bold">Nomor Pelanggan</h3>
-//                 </div>
-//                 <div className="flex flex-col w-1/3">
-//                   <h3 className="mt-6">Status Pembayaran</h3>
-//                   <h3
-//                     className={`${
-//                       item.stat === "nunggak"
-//                         ? "text-red-500"
-//                         : item.stat === "pending"
-//                         ? "text-yellow-300"
-//                         : item.stat === "lunas"
-//                         ? "text-green-400"
-//                         : ""
-//                     } font-bold`}
-//                   >
-//                     {item.stat === "nunggak"
-//                       "? "Belum Bayar"
-//                       : item.stat === "pending"
-//                       ? "Pending"
-//                       : item.stat === "lunas"
-//                       ? "Sudah Bayar"
-//                       : """}
-//                   </h3>
-//                   <button
-//                     onClick={() => {
-//                       ""
-//                     }}
-//                     className="font-bold mt-4 shadow-[0_0_6px_1px_rgba(0,0,0,0.2)] w-fit px-6 rounded-full py-1 bg-navBase text-white transform hover:-translate-x-0.5 hover:-translate-y-0.5 transition duration-300"
-//                   >
-//                     {item.stat === "nunggak"
-//                       ? "Bayar Tagihan"
-//                       : item.stat === "pending"
-//                       ? "Unduh Bukti"
-//                       : item.stat === "lunas"
-//                       ? "Unduh Struk"
-//                       : ""}
-//                   </button>
-//                 </div>
-//               </div>
-//             </div>
-//           ))
-//         ) : (
-//           <div className="text-center font-bold font-Inter flex items-center justify-center">
-//             Tidak dapat memuat data
-//           </div>
-//         )
-//       )
+//               ))
+//             ) : (
+//               <tr>
+//                 <td
+//                   colSpan="5"
+//                   className="px-4 py-3 text-gray-400 text-sm italic"
+//                 >
+//                   Tidak ada User
+//                 </td>
+//               </tr>
+//             )}
+//           </tbody>
+//         </table>
+//       </div>
+//     </div> */}

@@ -13,13 +13,13 @@ const ConfirmPay = ({ setBukti, data }) => {
     }
   };
 
-  const historyPayment = async (No_Pel) => {
-    if (!No_Pel) {
+  const historyPayment = async (id_pel) => {
+    if (!id_pel) {
       return alert("Gagal membuat tagihan");
     }
     const form = {
-      text: `Admin Menyetujui Bukti Pembayaran untuk ID Pelanggan: ${No_Pel}`,
-      No_Pel: No_Pel,
+      text: `Admin Menyetujui Bukti Pembayaran untuk ID Pelanggan: ${id_pel}`,
+      id_pel: id_pel,
     };
     const res = await fetch(`/api/his-acc-conf`, {
       method: "POST",
@@ -74,7 +74,7 @@ const ConfirmPay = ({ setBukti, data }) => {
           <button
             onClick={() => {
               approve(data.invoice);
-              historyPayment(data.No_Pel);
+              historyPayment(data.id_pel);
             }}
             className="font-bold mt-4 shadow-[0_0_6px_1px_rgba(0,0,0,0.2)] w-fit px-6 rounded-full py-1 bg-navBase text-white transform hover:-translate-x-0.5 hover:-translate-y-0.5 transition duration-300"
           >

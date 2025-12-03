@@ -4,8 +4,8 @@ const RiwUser = ({ user }) => {
   const [data, setData] = useState({});
 
   useEffect(() => {
-    const Get = async (No_Pel) => {
-      const res = await fetch(`/api/history-by-NoPel/?No_Pel=${No_Pel}`);
+    const Get = async (id_pel) => {
+      const res = await fetch(`/api/history-by-NoPel/?id_pel=${id_pel}`);
 
       const temp = await res.json();
       if (!temp.succeed) {
@@ -14,7 +14,7 @@ const RiwUser = ({ user }) => {
       setData(temp.result);
     };
 
-    Get(user.No_Pel);
+    Get(user.id_pel);
   }, []);
   return (
     <div className="p-4">
@@ -41,7 +41,7 @@ const RiwUser = ({ user }) => {
                   className="hover:bg-gray-50 transition-all border-b last:border-none"
                 >
                   <td className="md:px-3 py-3 text-center text-gray-600 border-r text-xs md:text-base">
-                    {item.No_Pel || "-"}
+                    {item.id_pel || "-"}
                   </td>
 
                   <td className="md:px-3 py-3 text-center text-gray-600 border-r text-xs md:text-base">

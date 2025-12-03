@@ -56,13 +56,13 @@ const Pay = ({ who, setPay, setURL }) => {
     }
   };
 
-  const historyBayar = async (No_Pel) => {
-    if (!No_Pel) {
+  const historyBayar = async (id_pel) => {
+    if (!id_pel) {
       return alert("Gagal membuat tagihan");
     }
     const form = {
-      text: `Menyerahkan Bukti Transaksi untuk ID Pelanggan: ${No_Pel}`,
-      No_Pel: No_Pel,
+      text: `Menyerahkan Bukti Transaksi untuk ID Pelanggan: ${id_pel}`,
+      id_pel: id_pel,
     };
     const res = await fetch(`/api/his-acc-conf`, {
       method: "POST",
@@ -149,7 +149,7 @@ const Pay = ({ who, setPay, setURL }) => {
         <button
           onClick={() => {
             handleUpload();
-            historyBayar(who.No_Pel);
+            historyBayar(who.id_pel);
           }}
           className="font-bold mt-4 shadow-[0_0_6px_1px_rgba(0,0,0,0.2)] w-fit px-6 rounded-full py-1 bg-navBase text-white transform hover:-translate-x-0.5 hover:-translate-y-0.5 transition duration-300"
         >

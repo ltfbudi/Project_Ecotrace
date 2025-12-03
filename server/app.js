@@ -38,9 +38,9 @@ app.get("/api", (req, res) => {
 // ADMIN QUERY
 
 app.post("/api/add-tagihan-user", (req, res) => {
-  const { invoice, No_Pel, time, pem_awal, pem_akhir, biaya } = req.body;
+  const { invoice, id_pel, time, pem_awal, pem_akhir, biaya } = req.body;
 
-  if (!invoice || !No_Pel || !time || !pem_awal || !pem_akhir || !biaya) {
+  if (!invoice || !id_pel || !time || !pem_awal || !pem_akhir || !biaya) {
     return res
       .status(400)
       .json({ message: "Ada data kosong!", succeed: false });
@@ -48,11 +48,11 @@ app.post("/api/add-tagihan-user", (req, res) => {
 
   try {
     const pemakaian = pem_akhir - pem_awal;
-    const sql = `INSERT INTO transaksi (invoice, No_Pel, pemakaian, biaya, pem_awal, pem_akhir, waktu) VALUES (?,?,?,?,?,?,?)`;
+    const sql = `INSERT INTO transaksi (invoice, id_pel, pemakaian, biaya, pem_awal, pem_akhir, waktu) VALUES (?,?,?,?,?,?,?)`;
 
     db.query(
       sql,
-      [invoice, No_Pel, pemakaian, biaya, pem_awal, pem_akhir, time],
+      [invoice, id_pel, pemakaian, biaya, pem_awal, pem_akhir, time],
       (err) => {
         if (err) {
           if (err.code === "ER_DUP_ENTRY") {
@@ -78,7 +78,7 @@ app.post("/api/add-tagihan-user", (req, res) => {
 
 app.get("/api/get-user-all", (req, res) => {
   try {
-    const sql = `SELECT nama, noHP, No_Pel, alamat, verif FROM users WHERE role = "user"`;
+    const sql = `SELECT nama, noHP, id_pel, alamat, verif FROM users WHERE role = "user"`;
 
     db.query(sql, (err, result) => {
       if (err) {
@@ -102,10 +102,10 @@ app.get("/api/get-user-all", (req, res) => {
 });
 
 app.post("/api/confirm-acc", (req, res) => {
-  const { No_Pel, noHP } = req.body;
-  const sql = `UPDATE users SET verif = "yes", No_Pel = ? WHERE noHP = ?`;
+  const { id_pel, noHP } = req.body;
+  const sql = `UPDATE users SET verif = "yes", id_pel = ? WHERE noHP = ?`;
 
-  db.query(sql, [No_Pel, noHP], (err, result) => {
+  db.query(sql, [id_pel, noHP], (err, result) => {
     if (err) {
       return res
         .status(500)
@@ -118,7 +118,7 @@ app.post("/api/confirm-acc", (req, res) => {
 });
 
 app.get("/api/get-tagihan-all-user", (req, res) => {
-  const sql = `SELECT a.noHP, a.nama, b.invoice, b.pemakaian, b.biaya, b.stat, b.No_Pel, b.url_bukti, b.pem_awal, b.pem_akhir, DATE_FORMAT(b.waktu, '%M') AS bulan FROM users AS a JOIN transaksi AS b ON a.No_Pel = b.No_Pel ORDER BY b.No_Pel, b.waktu DESC`;
+  const sql = `SELECT a.noHP, a.nama, b.invoice, b.pemakaian, b.biaya, b.stat, b.id_pel, b.url_bukti, b.pem_awal, b.pem_akhir, DATE_FORMAT(b.waktu, '%M') AS bulan FROM users AS a JOIN transaksi AS b ON a.id_pel = b.id_pel ORDER BY b.id_pel, b.waktu DESC`;
 
   db.query(sql, (err, result) => {
     if (err) {
@@ -165,12 +165,12 @@ app.delete("/api/decline-acc/:noHP", (req, res) => {
   });
 });
 
-app.delete("/api/delete-trans-acc/:No_Pel", (req, res) => {
-  const { No_Pel } = req.params;
+app.delete("/api/delete-trans-acc/:id_pel", (req, res) => {
+  const { id_pel } = req.params;
 
-  const sql = `DELETE FROM transaksi WHERE No_Pel = ?`;
+  const sql = `DELETE FROM transaksi WHERE id_pel = ?`;
 
-  db.query(sql, [No_Pel], (err, result) => {
+  db.query(sql, [id_pel], (err, result) => {
     if (err) {
       return res.status(500).json({ succeed: false });
     }
@@ -179,12 +179,12 @@ app.delete("/api/delete-trans-acc/:No_Pel", (req, res) => {
   });
 });
 
-app.delete("/api/delete-acc/:No_Pel", (req, res) => {
-  const { No_Pel } = req.params;
+app.delete("/api/delete-acc/:id_pel", (req, res) => {
+  const { id_pel } = req.params;
 
-  const sql = `DELETE FROM users WHERE No_Pel = ?`;
+  const sql = `DELETE FROM users WHERE id_pel = ?`;
 
-  db.query(sql, [No_Pel], (err, result) => {
+  db.query(sql, [id_pel], (err, result) => {
     if (err) {
       return res
         .status(500)
@@ -210,10 +210,10 @@ app.post("/api/his-confirm", (req, res) => {
 });
 
 app.post("/api/his-acc-conf", (req, res) => {
-  const { text, No_Pel } = req.body;
+  const { text, id_pel } = req.body;
 
-  const sql = `INSERT INTO history (hal, No_Pel) VALUES (?,?)`;
-  db.query(sql, [text, No_Pel], (err, result) => {
+  const sql = `INSERT INTO history (hal, id_pel) VALUES (?,?)`;
+  db.query(sql, [text, id_pel], (err, result) => {
     if (err) {
       return res
         .status(500)
@@ -249,7 +249,39 @@ app.get("/api/history-all", (req, res) => {
   });
 });
 
+app.post("/api/tambah-pemakaian-akhir", (req, res) => {
+  const { id_pel } = req.body;
+
+  if (!id_pel) {
+  }
+  const sql = `INSERT INTO pem_awal (id_pel, pemakaian) VALUES (?, 0)`;
+  db.query(sql, [id_pel], (err) => {
+    if (err) {
+      return res
+        .status(500)
+        .json({ message: "Gagal Terkoneksi!", succeed: false });
+    }
+    res.status(200).json({ succeed: true });
+  });
+});
+
 // USER QUERY
+
+app.get("/api/pem-awal", (req, res) => {
+  const { pem_awal } = req.query;
+  try {
+    const sql = `SELECT pemakaian FROM pem_awal WHERE id_pel = ? ORDER BY pemakaian DESC`;
+    db.query(sql, [id_pel], (err, result) => {
+      if (err) {
+        return res
+          .status(500)
+          .json({ message: "Terjadi Kesalahan pada Server", succeed: false });
+      }
+      const data = result;
+      res.status(200).json({ succeed: true, pemakaian: data });
+    });
+  } catch {}
+});
 
 app.post("/api/upload-bayar", upload.single("file"), async (req, res) => {
   const file = req.file;
@@ -286,11 +318,11 @@ app.post("/api/upload-bayar", upload.single("file"), async (req, res) => {
 });
 
 app.get("/api/data-transaksi", (req, res) => {
-  const { No_Pel } = req.query;
+  const { id_pel } = req.query;
   try {
-    const sql = `SELECT a.noHP, a.nama, b.pem_awal, b.pem_akhir, b.invoice, b.pemakaian, b.biaya, b.stat, b.No_Pel, a.alamat, b.url_bukti, DATE_FORMAT(b.waktu, '%M') AS bulan FROM users AS a JOIN transaksi AS b ON a.No_Pel = b.No_Pel WHERE a.No_Pel = ? ORDER BY b.waktu DESC`;
+    const sql = `SELECT a.noHP, a.nama, b.pem_awal, b.pem_akhir, b.invoice, b.pemakaian, b.biaya, b.stat, b.id_pel, a.alamat, b.url_bukti, DATE_FORMAT(b.waktu, '%M') AS bulan FROM users AS a JOIN transaksi AS b ON a.id_pel = b.id_pel WHERE a.id_pel = ? ORDER BY b.waktu DESC`;
 
-    db.query(sql, [No_Pel], (err, result) => {
+    db.query(sql, [id_pel], (err, result) => {
       if (err) {
         return res
           .status(500)
@@ -348,10 +380,10 @@ app.post("/api/update-profile", async (req, res) => {
 });
 
 app.get("/api/history-by-NoPel", (req, res) => {
-  const { No_Pel } = req.query;
+  const { id_pel } = req.query;
 
-  const sql = `SELECT * FROM history WHERE No_Pel = ?`;
-  db.query(sql, [No_Pel], (err, result) => {
+  const sql = `SELECT * FROM history WHERE id_pel = ?`;
+  db.query(sql, [id_pel], (err, result) => {
     if (err) {
       return res
         .status(500)
@@ -398,9 +430,9 @@ app.post("/api/update-status-tagihan", async (req, res) => {
 });
 
 app.post("/api/register", async (req, res) => {
-  const { noHP, nama, pass, passConfirm } = req.body;
+  const { noHP, nama, pass, passConfirm, email, alamat } = req.body;
 
-  if (!noHP || !nama || !pass || !passConfirm) {
+  if (!noHP || !nama || !pass || !passConfirm || !email || !alamat) {
     return res
       .status(400)
       .json({ message: "Ada data yang kosong!", succeed: false });
@@ -409,6 +441,11 @@ app.post("/api/register", async (req, res) => {
     return res
       .status(400)
       .json({ message: "Format Nomor HP salah", succeed: false });
+  }
+  if (!val.isEmail(email)) {
+    return res
+      .status(400)
+      .json({ message: "Email tidak sesuai format", succeed: false });
   }
   if (pass.length < 8) {
     return res
@@ -424,9 +461,10 @@ app.post("/api/register", async (req, res) => {
   try {
     const hashedPass = await bcrypt.hash(pass, 10);
 
-    const sql = "INSERT INTO users (noHP, nama, pass) VALUES (?, ?, ?)";
+    const sql =
+      "INSERT INTO users (noHP, nama, pass, email, alamat) VALUES (?, ?, ?, ?, ?)";
 
-    db.query(sql, [noHP, nama, hashedPass], (err) => {
+    db.query(sql, [noHP, nama, hashedPass, email, alamat], (err) => {
       if (err) {
         if (err.code === "ER_DUP_ENTRY") {
           return res

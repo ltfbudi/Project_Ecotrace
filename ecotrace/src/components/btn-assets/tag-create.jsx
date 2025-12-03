@@ -1,14 +1,12 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
 const CreateTag = ({ setCreate, user }) => {
   const fileRef = useRef(null);
   const [preview, setPreview] = useState(null);
   const [file, setFile] = useState(null);
+  const [awal, setAwal] = useState({});
   const [form, setForm] = useState({
-    invoice: "",
-    No_Pel: "",
     time: "",
-    pem_awal: "",
     pem_akhir: "",
   });
 
@@ -49,12 +47,49 @@ const CreateTag = ({ setCreate, user }) => {
     }
   };
 
-  const history = async (No_Pel, bulan) => {
-    if (!No_Pel || !bulan) return alert("Gagal membuat tagihan");
+  const handleSubmitUser = async (e) => {
+    e.preventDefault();
+    if (!file) return alert("Pilih foto dulu!");
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "ecotrace_default");
+
+    const res = await fetch("/api/upload-bayar", {
+      method: "POST",
+      body: formData,
+    });
+    const temp = await res.json();
+
+    if (temp.succeed) {
+      const form = {
+        url: temp.url,
+      };
+
+      const res = await fetch("/api/upload-pengajuan", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(form),
+      });
+
+      const temp2 = await res.json();
+      if (temp2.succeed) {
+      } else {
+        alert(temp2.message);
+      }
+    } else {
+      alert(temp.message);
+    }
+  };
+
+  const history = async (id_pel, bulan) => {
+    if (!id_pel || !bulan) return alert("Gagal membuat tagihan");
 
     const form = {
       text: `Membuat tagihan pada ${bulan}`,
-      No_Pel: No_Pel,
+      id_pel: id_pel,
     };
 
     const res = await fetch(`/api/his-acc-conf`, {
@@ -81,7 +116,17 @@ const CreateTag = ({ setCreate, user }) => {
     setPreview(URL.createObjectURL(selected)); // preview lokal
   };
 
-  const handleUpload = async () => {};
+  useEffect(() => {
+    const Get = async () => {
+      const res = await fetch("/api/pem-awal-id_pel");
+
+      const temp = res.json();
+      if (temp.succeed) {
+        setAwal(temp.pemakaian);
+      }
+    };
+    Get();
+  }, []);
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex justify-center items-center overflow-y-auto py-6">
@@ -107,16 +152,15 @@ const CreateTag = ({ setCreate, user }) => {
           </h1>
 
           <form
-            onSubmit={handleSubmit}
+            onSubmit={handleSubmitUser}
             className="flex flex-col gap-2 font-Inter"
           >
             <div>
               <label>ID Pelanggan</label>
               <input
                 type="text"
-                name="No_Pel"
-                value={form.No_Pel}
-                onChange={change}
+                name="id_pel"
+                value={user.id_pel}
                 className="w-full border border-gray-400 rounded-full h-9 px-4"
                 placeholder="ID Pelanggan"
               />
@@ -138,8 +182,8 @@ const CreateTag = ({ setCreate, user }) => {
                 <input
                   type="text"
                   name="pem_awal"
-                  value={form.pem_awal}
-                  onChange={change}
+                  value={awal.pemakaian ? awal.pemakaian : 0}
+                  disabled
                   className="w-full border border-gray-400 rounded-full h-9 px-4"
                   placeholder="Pemakaian Awal"
                 />
@@ -159,7 +203,11 @@ const CreateTag = ({ setCreate, user }) => {
                 <input
                   type="text"
                   disabled
-                  value={form.pem_akhir - form.pem_awal}
+                  value={
+                    awal.pemakaian
+                      ? form.pem_akhir - awal.pemakaian
+                      : form.pem_akhir - 0
+                  }
                   className="w-full border border-gray-400 rounded-full h-9 px-4"
                 />
                 <label className="mt-2">Biaya Total</label>
@@ -169,7 +217,9 @@ const CreateTag = ({ setCreate, user }) => {
                   value={
                     "RP " +
                     Number(
-                      (form.pem_akhir - form.pem_awal) * 10000
+                      (awal.pemakaian
+                        ? form.pem_akhir - awal.pemakaian
+                        : form.pem_akhir - 0) * 10000
                     ).toLocaleString("id-ID")
                   }
                   className="w-full border border-gray-400 rounded-full h-9 px-4"
@@ -214,7 +264,7 @@ const CreateTag = ({ setCreate, user }) => {
             </div>
             <div className="w-full flex justify-center">
               <button
-                onClick={() => history(form.No_Pel, form.time)}
+                onClick={() => history(form.id_pel, form.time)}
                 type="submit"
                 className="bg-linear-to-br from-navBase to-nav mt-4 w-fit px-6 py-1 text-white font-bold rounded-full shadow-md hover:-translate-y-0.5 active:scale-95 transition"
               >
@@ -252,8 +302,8 @@ const CreateTag = ({ setCreate, user }) => {
               <label>ID Pelanggan</label>
               <input
                 type="text"
-                name="No_Pel"
-                value={form.No_Pel}
+                name="id_pel"
+                value={form.id_pel}
                 onChange={change}
                 className="w-full border border-gray-400 rounded-full h-9 px-4"
                 placeholder="ID Pelanggan"
@@ -308,7 +358,7 @@ const CreateTag = ({ setCreate, user }) => {
               </div>
 
               <button
-                onClick={() => history(form.No_Pel, form.time)}
+                onClick={() => history(form.id_pel, form.time)}
                 type="submit"
                 className="bg-linear-to-br from-navBase to-nav mt-4 w-fit px-6 py-1 text-white font-bold rounded-full shadow-md hover:-translate-y-0.5 active:scale-95 transition"
               >

@@ -19,7 +19,7 @@ const CompStruk = ({ data, setStruk }) => {
     const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
     pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight);
-    pdf.save(`Struk-${data.No_Pel}.pdf`);
+    pdf.save(`Struk-${data.id_pel}.pdf`);
   };
 
   return (
@@ -56,7 +56,7 @@ const CompStruk = ({ data, setStruk }) => {
                 <tr>
                   <td className="w-1/3">ID Pelanggan</td>
                   <td>:</td>
-                  <td>{data.No_Pel}</td>
+                  <td>{data.id_pel}</td>
                 </tr>
                 <tr>
                   <td>Nama Lengkap</td>

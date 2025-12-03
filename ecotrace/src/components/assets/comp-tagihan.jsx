@@ -15,7 +15,7 @@ const CompTagihan = ({ user }) => {
   const [temp, setTemp] = useState({
     url: "",
     invoice: "",
-    No_Pel: "",
+    id_pel: "",
   });
 
   const [strukAcc, setAcc] = useState(null);
@@ -24,15 +24,15 @@ const CompTagihan = ({ user }) => {
   const [url, setURL] = useState("");
 
   useEffect(() => {
-    const Get = async (No_Pel) => {
-      const res = await fetch(`/api/data-transaksi?No_Pel=${No_Pel}`);
+    const Get = async (id_pel) => {
+      const res = await fetch(`/api/data-transaksi?id_pel=${id_pel}`);
       const temp = await res.json();
 
       if (temp.succeed) {
         setData(temp.data);
       }
     };
-    Get(user.No_Pel);
+    Get(user.id_pel);
   }, []);
   return (
     <div className="w-full flex flex-col gap-4 justify-center items-center px-2 sm:px-4">
@@ -75,7 +75,7 @@ const CompTagihan = ({ user }) => {
                 <h3 className="font-bold">{item.pemakaian + " m³"}</h3>
 
                 <h3 className="mt-2 text-gray-600">ID Pelanggan</h3>
-                <h3 className="font-bold">{item.No_Pel}</h3>
+                <h3 className="font-bold">{item.id_pel}</h3>
               </div>
 
               {/* Kolom 3 */}
@@ -110,14 +110,14 @@ const CompTagihan = ({ user }) => {
                         invo: item.invoice,
                         pemakaian: item.pemakaian,
                         biaya: item.biaya,
-                        No_Pel: item.No_Pel,
+                        id_pel: item.id_pel,
                       });
                     } else if (item.stat === "pending") {
                       setBukti(true);
                       setTemp({
                         url: item.url_bukti,
                         invoice: item.invoice,
-                        No_Pel: item.No_Pel,
+                        id_pel: item.id_pel,
                       });
                     } else if (item.stat === "lunas") {
                       setStruk(true);

@@ -45,7 +45,7 @@ const RiwAdmin = () => {
                   className="hover:bg-gray-50 transition-all border-b last:border-none"
                 >
                   <td className="md:px-3 py-3 text-center text-gray-600 border-r text-xs md:text-base">
-                    {item.No_Pel || "-"}
+                    {item.id_pel || "-"}
                   </td>
 
                   <td className="md:px-3 py-3 text-center text-gray-600 border-r text-xs md:text-base">
