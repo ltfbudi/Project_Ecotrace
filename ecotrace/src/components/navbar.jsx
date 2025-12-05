@@ -1,223 +1,107 @@
 import { useState } from "react";
+import { useLocation } from "react-router-dom";
 
-const Navbar = ({ user }) => {
-  const [open, setOpen] = useState(false);
+const Sidebar = ({ user, open, setOpen }) => {
+  const location = useLocation();
+
+  const isActive = (path) => location.pathname === path;
+
+  const menuAdmin = [
+    { name: "Dashboard", path: "/dashboard" },
+    { name: "Tagihan", path: "/tagihan" },
+    { name: "Riwayat", path: "/riwayat" },
+    { name: "User", path: "/user" },
+    { name: "Pengajuan", path: "/pengajuan" },
+    { name: "Profile", path: "/profile" },
+  ];
+
+  const menuUser = [
+    { name: "Dashboard", path: "/dashboard" },
+    { name: "Tagihan", path: "/tagihan" },
+    { name: "Riwayat", path: "/riwayat" },
+    { name: "Pengajuan", path: "/pengajuan" },
+    { name: "Profile", path: "/profile" },
+  ];
+
+  const menus = user.role === "admin" ? menuAdmin : menuUser;
+
   return (
     <div>
-      {user.role === "admin" ? (
-        <nav className="bg-white sticky top-0 left-0 w-full shadow-md shadow-gray-400 px-6">
-          <div className="flex items-center justify-between py-4">
-            {/* Logo */}
+      {/* Sidebar */}
+      <div
+        className={`bg-white shadow-lg h-screen fixed top-0 
+              ${open ? "left-0" : "-left-64"} w-64 
+              transition-all duration-300 z-40`}
+      >
+        {/* Logo */}
+        <div className="px-6 py-6 flex justify-between items-center mt-10 transition-all duration-300">
+          <h1 className="font-bold text-3xl text-navBase">ecotrace.</h1>
+
+          {/* Mobile Toggle */}
+          {/* Floating toggle button for mobile */}
+          <button
+            className="fixed top-5 left-5 z-50 bg-white p-2 rounded-xl shadow-md"
+            onClick={() => setOpen(!open)}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-7 w-7 text-gray-700"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth="2"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d={open ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"}
+              />
+            </svg>
+          </button>
+        </div>
+
+        {/* Menu */}
+        <div className="mt-5 px-4 space-y-2">
+          {menus.map((m) => (
             <a
-              href="/"
-              className="font-bold font-Inter text-navBase text-3xl sm:text-4xl"
+              key={m.path}
+              href={m.path}
+              className={`
+                block px-4 py-3 rounded-xl text-sm font-medium 
+                ${
+                  isActive(m.path)
+                    ? "bg-navBase text-white shadow-md"
+                    : "text-gray-700 hover:bg-gray-100"
+                }
+              `}
             >
-              ecotrace.
+              {m.name}
             </a>
+          ))}
+        </div>
 
-            {/* Menu Desktop Admin */}
-            <div className="hidden md:flex justify-end items-center gap-9 text-lg font-Inter text-nav">
-              <a href="/dashboard" className="text-sm">
-                Dashboard
-              </a>
-              <a href="/tagihan" className="text-sm">
-                Tagihan
-              </a>
-              <a href="/riwayat" className="text-sm">
-                Riwayat
-              </a>
-              <a href="/user" className="text-sm">
-                User
-              </a>
-              <a href="/pengajuan" className="text-sm">
-                Pengajuan
-              </a>
-              <div className="flex items-center gap-2">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 16 16"
-                  fill="currentColor"
-                  className="size-4 text-icon"
-                >
-                  <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM12.735 14c.618 0 1.093-.561.872-1.139a6.002 6.002 0 0 0-11.215 0c-.22.578.254 1.139.872 1.139h9.47Z" />
-                </svg>
-                <a href="/profile" className="text-center text-sm">
-                  {user.nama} <br />
-                  {user.role === "user" ? "" : "Admin"}
-                </a>
-              </div>
-            </div>
-
-            {/* Mobile Hamburger */}
-            <button
-              className="md:hidden focus:outline-none"
-              onClick={() => setOpen(!open)}
+        {/* User Info */}
+        <div className="absolute bottom-5 px-6 flex items-center gap-3">
+          <div className="bg-gray-200 p-2 rounded-full">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 16 16"
+              fill="currentColor"
+              className="size-5 text-gray-700"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={2}
-                stroke="currentColor"
-                className="w-8 h-8 text-nav"
-              >
-                {open ? (
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                ) : (
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M4 6h16M4 12h16M4 18h16"
-                  />
-                )}
-              </svg>
-            </button>
+              <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM12.735 14c.618 0 1.093-.561.872-1.139a6.002 6.002 0 0 0-11.215 0c-.22.578.254 1.139.872 1.139h9.47Z" />
+            </svg>
           </div>
-
-          {/* Mobile Menu Dropdown */}
-          {open && (
-            <div className="md:hidden flex flex-col gap-5 pb-5 text-lg font-Inter text-nav">
-              <a href="/dashboard" className="border-b pb-2 text-sm">
-                Dashboard
-              </a>
-              <a href="/tagihan" className="border-b pb-2 text-sm">
-                Tagihan
-              </a>
-              <a href="/riwayat" className="border-b pb-2 text-sm">
-                Riwayat
-              </a>
-              <a href="/user" className="border-b pb-2 text-sm">
-                User
-              </a>
-              <a
-                href="/profile"
-                className="flex items-center gap-2 text-center text-sm"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 16 16"
-                  fill="currentColor"
-                  className="size-4 text-icon"
-                >
-                  <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM12.735 14c.618 0 1.093-.561.872-1.139a6.002 6.002 0 0 0-11.215 0c-.22.578.254 1.139.872 1.139h9.47Z" />
-                </svg>
-                {user.nama} <br />
-                {user.role === "user" ? "" : "Admin"}
-              </a>
-            </div>
-          )}
-        </nav>
-      ) : (
-        <nav className="bg-white sticky top-0 left-0 w-full shadow-md shadow-gray-400 px-6">
-          <div className="flex items-center justify-between py-4">
-            {/* Logo */}
-            <a
-              href="/"
-              className="font-bold font-Inter text-navBase text-3xl sm:text-4xl"
-            >
-              ecotrace.
-            </a>
-
-            {/* Menu Desktop User */}
-            <div className="hidden md:flex justify-end items-center gap-7 text-lg font-Inter text-nav">
-              <a href="/dashboard" className="text-sm">
-                Dashboard
-              </a>
-              <a href="/tagihan" className="text-sm">
-                Tagihan
-              </a>
-              <a href="/riwayat" className="text-sm">
-                Riwayat
-              </a>
-              <a href="/pengajuan" className="text-sm">
-                Pengajuan
-              </a>
-              <div className="flex items-center gap-2">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 16 16"
-                  fill="currentColor"
-                  className="size-4 text-icon"
-                >
-                  <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM12.735 14c.618 0 1.093-.561.872-1.139a6.002 6.002 0 0 0-11.215 0c-.22.578.254 1.139.872 1.139h9.47Z" />
-                </svg>
-                <a href="/profile" className="text-center text-sm">
-                  {user.nama} <br />
-                  {user.role === "user" ? "" : "Admin"}
-                </a>
-              </div>
-            </div>
-
-            {/* Mobile Hamburger */}
-            <button
-              className="md:hidden focus:outline-none"
-              onClick={() => setOpen(!open)}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={2}
-                stroke="currentColor"
-                className="w-8 h-8 text-nav"
-              >
-                {open ? (
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                ) : (
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M4 6h16M4 12h16M4 18h16"
-                  />
-                )}
-              </svg>
-            </button>
+          <div>
+            <p className="text-sm font-semibold">{user.nama}</p>
+            <p className="text-xs text-gray-500">
+              {user.role === "admin" ? "Admin" : "User"}
+            </p>
           </div>
-
-          {/* Mobile Menu Dropdown */}
-          {open && (
-            <div className="md:hidden flex flex-col gap-5 pb-5 text-lg font-Inter text-nav">
-              <a href="/dashboard" className="border-b pb-2 text-sm">
-                Dashboard
-              </a>
-              <a href="/tagihan" className="border-b pb-2 text-sm">
-                Tagihan
-              </a>
-              <a href="/riwayat" className="border-b pb-2 text-sm">
-                Riwayat
-              </a>
-              <a href="/pengajuan" className="border-b pb-2 text-sm">
-                Pengajuan
-              </a>
-              <a
-                href="/profile"
-                className="flex items-center gap-2 text-center text-sm"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 16 16"
-                  fill="currentColor"
-                  className="size-4 text-icon"
-                >
-                  <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM12.735 14c.618 0 1.093-.561.872-1.139a6.002 6.002 0 0 0-11.215 0c-.22.578.254 1.139.872 1.139h9.47Z" />
-                </svg>
-                {user.nama} <br />
-                {user.role === "user" ? "" : "Admin"}
-              </a>
-            </div>
-          )}
-        </nav>
-      )}
+        </div>
+      </div>
     </div>
   );
 };
 
-export default Navbar;
+export default Sidebar;

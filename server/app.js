@@ -4,6 +4,7 @@ const bcrypt = require("bcrypt");
 const val = require("validator");
 const multer = require("multer");
 const { createClient } = require("@supabase/supabase-js");
+const e = require("express");
 
 const upload = multer();
 const app = express();
@@ -345,7 +346,17 @@ app.get("/api/data-transaksi", (req, res) => {
 });
 
 app.post("/api/update-profile", async (req, res) => {
-  const { nama, noHP, pass, alamat, noHPprev, passprev } = req.body;
+  const {
+    nama,
+    noHP,
+    passPrev,
+    passNew,
+    passNewConfirm,
+    email,
+    alamat,
+    noHPprev,
+    passRealPrev,
+  } = req.body;
 
   if (!nama || !noHP) {
     return res
@@ -353,29 +364,61 @@ app.post("/api/update-profile", async (req, res) => {
       .json({ message: "Kolom Nama dan Nomor Telepon tidak boleh kosong!" });
   }
 
-  if (!pass) {
-    const sql = `UPDATE users SET nama = ?, noHP = ?, pass = ?, alamat = ? WHERE noHP = ?`;
-    db.query(sql, [nama, noHP, passprev, alamat, noHPprev], (err) => {
-      if (err) {
-        return res
-          .status(500)
-          .json({ message: "Terjadi kesalahan pada Server", succeed: false });
-      }
+  if (!passPrev && !passNew && !passNewConfirm) {
+    const sql = `UPDATE users SET nama = ?, noHP = ?, pass = ?, alamat = ? , email = ? WHERE noHP = ?`;
+    db.query(
+      sql,
+      [nama, noHP, passRealPrev, alamat, email, noHPprev],
+      (err) => {
+        if (err) {
+          return res
+            .status(500)
+            .json({ message: "Terjadi kesalahan pada Server", succeed: false });
+        }
 
-      res.status(200).json({ message: "Berhasil update data", succeed: true });
+        res
+          .status(200)
+          .json({ message: "Berhasil update data", succeed: true });
+      }
+    );
+  } else if (!passPrev || !passNew || !passNewConfirm) {
+    return res.status(400).json({
+      message: "Kolom Password tidak boleh ada yang kosong salah satu",
+      succeed: false,
     });
   } else {
-    const hashedPass = await bcrypt.hash(pass, 10);
-    const sql = `UPDATE users SET nama = ?, noHP = ?, pass = ?, alamat = ? WHERE noHP = ?`;
-    db.query(sql, [nama, noHP, hashedPass, alamat, noHPprev], (err) => {
-      if (err) {
-        return res
-          .status(500)
-          .json({ message: "Terjadi kesalahan pada Server", succeed: false });
-      }
+    if (passNew !== passNewConfirm) {
+      return req.status(400).json({
+        message: "Password Baru dan Confirmasinya tidak Sama !",
+        succeed: false,
+      });
+    }
+    const isMatch = await bcrypt.compare(passPrev, passRealPrev);
+    if (isMatch) {
+      const hashedPass = await bcrypt.hash(passNew, 10);
+      const sql = `UPDATE users SET nama = ?, noHP = ?, pass = ?, alamat = ?, email = ? WHERE noHP = ?`;
+      db.query(
+        sql,
+        [nama, noHP, hashedPass, alamat, email, noHPprev],
+        (err) => {
+          if (err) {
+            return res.status(500).json({
+              message: "Terjadi kesalahan pada Server",
+              succeed: false,
+            });
+          }
 
-      res.status(200).json({ message: "Berhasil update data", succeed: true });
-    });
+          res
+            .status(200)
+            .json({ message: "Berhasil update data", succeed: true });
+        }
+      );
+    } else {
+      return res.status(400).json({
+        message: "Password Lama yang Anda masukkan tidak sama!",
+        succeed: false,
+      });
+    }
   }
 });
 
@@ -403,6 +446,42 @@ app.get("/api/history-by-NoPel", (req, res) => {
     });
     res.status(200).json({ succeed: true, result: formatted });
   });
+});
+
+app.get("/api/pem-awal-id-pel", (req, res) => {
+  const { id_pel } = req.query;
+
+  const sql = `SELECT * FROM pem_awal WHERE id_pel = ?`;
+  db.query(sql, [id_pel], (err, result) => {
+    if (err) {
+      return res
+        .status(500)
+        .json({ Message: "Gagal Terkoneksi!", succeed: false });
+    }
+    const data = result;
+    res.status(200).json({ succeed: true, data });
+  });
+});
+
+app.post("/api/upload-pengajuan-user", (req, res) => {
+  const { time, pem_akhir, url, pem_awal, total, biaya, id_pel } = req.body;
+
+  const sql = `INSERT INTO transaksi (id_pel, pemakaian, pem_awal, pem_akhir, biaya, waktu, url) VALUES (?, ?, ?, ?, ?, ?, ?)`;
+  db.query(
+    sql,
+    [id_pel, total, pem_awal, pem_akhir, biaya, time, url],
+    (err) => {
+      if (err) {
+        return res
+          .status(500)
+          .json({ message: "Tidak Dapat terkoneksi", succeed: false });
+      }
+
+      res
+        .status(200)
+        .json({ message: "Berhasil Menambahkan data!", succeed: true });
+    }
+  );
 });
 
 // ALL ROLE

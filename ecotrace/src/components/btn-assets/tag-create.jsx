@@ -9,6 +9,8 @@ const CreateTag = ({ setCreate, user }) => {
     time: "",
     pem_akhir: "",
   });
+  const totalPemakaian = form.pem_akhir - awal.pemakaian;
+  const harga = (form.pem_akhir - awal.pemakaian) * 10000;
 
   const change = (e) => {
     setForm({
@@ -16,7 +18,6 @@ const CreateTag = ({ setCreate, user }) => {
       [e.target.name]: e.target.value,
     });
   };
-
   const handleSubmit = async (err) => {
     err.preventDefault();
 
@@ -62,20 +63,27 @@ const CreateTag = ({ setCreate, user }) => {
     const temp = await res.json();
 
     if (temp.succeed) {
-      const form = {
+      const newForm = {
+        ...form,
         url: temp.url,
+        pem_awal: awal.pemakaian,
+        total: totalPemakaian,
+        biaya: harga,
+        id_pel: user.id_pel,
       };
 
-      const res = await fetch("/api/upload-pengajuan", {
+      const res = await fetch("/api/upload-pengajuan-user", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(form),
+        body: JSON.stringify(newForm),
       });
 
       const temp2 = await res.json();
       if (temp2.succeed) {
+        alert(temp2.message);
+        window.location.reload();
       } else {
         alert(temp2.message);
       }
@@ -117,16 +125,16 @@ const CreateTag = ({ setCreate, user }) => {
   };
 
   useEffect(() => {
-    const Get = async () => {
-      const res = await fetch("/api/pem-awal-id_pel");
+    const Get = async (id_pel) => {
+      const res = await fetch(`/api/pem-awal-id-pel?id_pel=${id_pel}`);
 
-      const temp = res.json();
+      const temp = await res.json();
       if (temp.succeed) {
-        setAwal(temp.pemakaian);
+        setAwal(temp.data[0]);
       }
     };
-    Get();
-  }, []);
+    Get(user.id_pel);
+  }, [user.id_pel]);
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex justify-center items-center overflow-y-auto py-6">
@@ -148,7 +156,7 @@ const CreateTag = ({ setCreate, user }) => {
           </div>
 
           <h1 className="text-xl text-navBase font-bold font-Inter mb-3">
-            Create Tagihan
+            Membuat Pengajuan Transaksi
           </h1>
 
           <form
@@ -161,6 +169,8 @@ const CreateTag = ({ setCreate, user }) => {
                 type="text"
                 name="id_pel"
                 value={user.id_pel}
+                disabled
+                onChange={() => {}}
                 className="w-full border border-gray-400 rounded-full h-9 px-4"
                 placeholder="ID Pelanggan"
               />
@@ -182,8 +192,9 @@ const CreateTag = ({ setCreate, user }) => {
                 <input
                   type="text"
                   name="pem_awal"
-                  value={awal.pemakaian ? awal.pemakaian : 0}
+                  value={awal.pemakaian}
                   disabled
+                  onChange={() => {}}
                   className="w-full border border-gray-400 rounded-full h-9 px-4"
                   placeholder="Pemakaian Awal"
                 />
@@ -203,25 +214,15 @@ const CreateTag = ({ setCreate, user }) => {
                 <input
                   type="text"
                   disabled
-                  value={
-                    awal.pemakaian
-                      ? form.pem_akhir - awal.pemakaian
-                      : form.pem_akhir - 0
-                  }
+                  value={totalPemakaian}
+                  onChange={() => {}}
                   className="w-full border border-gray-400 rounded-full h-9 px-4"
                 />
                 <label className="mt-2">Biaya Total</label>
                 <input
                   type="text"
                   disabled
-                  value={
-                    "RP " +
-                    Number(
-                      (awal.pemakaian
-                        ? form.pem_akhir - awal.pemakaian
-                        : form.pem_akhir - 0) * 10000
-                    ).toLocaleString("id-ID")
-                  }
+                  value={"RP " + Number(harga).toLocaleString("id-ID")}
                   className="w-full border border-gray-400 rounded-full h-9 px-4"
                 />
               </div>
@@ -240,7 +241,7 @@ const CreateTag = ({ setCreate, user }) => {
               <div className="w-full flex justify-center">
                 <div className="w-50 h-60 flex justify-center items-center align-middle ">
                   <img
-                    src={``}
+                    src={`https://tse1.mm.bing.net/th/id/OIP.ksezYmQQItwKOBx_9d2Q-AHaHa?cb=ucfimg2&ucfimg=1&rs=1&pid=ImgDetMain&o=7&rm=3`}
                     alt="preview"
                     className="w-full h-full align-middle"
                   />
@@ -249,9 +250,9 @@ const CreateTag = ({ setCreate, user }) => {
             )}
             <input
               type="file"
+              accept="image/*"
               ref={fileRef}
               style={{ display: "none" }}
-              accept="image/*"
               onChange={handleFileChange}
             />
             <div className="flex w-full justify-center">
@@ -264,7 +265,7 @@ const CreateTag = ({ setCreate, user }) => {
             </div>
             <div className="w-full flex justify-center">
               <button
-                onClick={() => history(form.id_pel, form.time)}
+                onClick={() => {}}
                 type="submit"
                 className="bg-linear-to-br from-navBase to-nav mt-4 w-fit px-6 py-1 text-white font-bold rounded-full shadow-md hover:-translate-y-0.5 active:scale-95 transition"
               >

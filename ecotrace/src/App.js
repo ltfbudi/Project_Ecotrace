@@ -8,8 +8,10 @@ import {
   useLocation,
 } from "react-router-dom";
 import TheApp from "./components/theApp";
+import Navbar2 from "./components/navbar2";
 
 function Layout({ children }) {
+  const [open, setOpen] = useState(true);
   const [user, setUser] = useState(() => {
     const saved = localStorage.getItem("user");
     return saved ? JSON.parse(saved) : null;
@@ -18,9 +20,18 @@ function Layout({ children }) {
   const hide = ["/"];
   const show = !hide.includes(location.pathname);
   return (
-    <div>
-      {show && <Navbar user={user} />}
-      <div>{children}</div>
+    <div className={`${show ? "flex" : "flex-none"}`}>
+      {/* Sidebar */}
+      {show && <Navbar user={user} open={open} setOpen={setOpen} />}
+
+      {/* Halaman */}
+      <div
+        className={`flex-1 ${
+          show ? (open ? "ml-64 md:ml-64 p-4" : "px-12 py-4") : ""
+        } bg-gray-50 min-h-screen transition-all duration-300`}
+      >
+        {children}
+      </div>
     </div>
   );
 }
