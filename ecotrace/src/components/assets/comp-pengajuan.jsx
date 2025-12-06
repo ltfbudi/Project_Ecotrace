@@ -3,7 +3,7 @@ import CreateTag from "../btn-assets/tag-create";
 const CompPengajuan = ({ create, user, setCreate }) => {
   return (
     <div className="w-full flex flex-col gap-4 justify-center items-center px-2 sm:px-4">
-      {create && <CreateTag setCreate={setCreate} user={user} />}
+      {create && <CreateTag setCreate={setCreate} user={user} who={null} />}
 
       <div className="px-6 py-5 shadow-md rounded-2xl w-full sm:w-3/4 md:w-2/3 lg:w-1/2bg-white">
         {/* Header bulan */}

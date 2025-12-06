@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const Sidebar = ({ user, open, setOpen }) => {
   const location = useLocation();
+  const navi = useNavigate();
 
   const isActive = (path) => location.pathname === path;
 
@@ -35,7 +36,14 @@ const Sidebar = ({ user, open, setOpen }) => {
       >
         {/* Logo */}
         <div className="px-6 py-6 flex justify-between items-center mt-10 transition-all duration-300">
-          <h1 className="font-bold text-3xl text-navBase">ecotrace.</h1>
+          <h1
+            className="font-bold text-3xl text-navBase"
+            onClick={() => {
+              navi("/");
+            }}
+          >
+            ecotrace.
+          </h1>
 
           {/* Mobile Toggle */}
           {/* Floating toggle button for mobile */}

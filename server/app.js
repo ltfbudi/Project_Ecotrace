@@ -266,6 +266,80 @@ app.post("/api/tambah-pemakaian-akhir", (req, res) => {
   });
 });
 
+app.get("/api/get-count-pending", (req, res) => {
+  const sql = `SELECT COUNT(id_pel) AS jml FROM transaksi WHERE stat = "diajukan" OR stat = "revisi"`;
+
+  db.query(sql, (err, result) => {
+    if (err) {
+      return res
+        .status(500)
+        .json({ message: "Gagal Terkoneksi", succeed: false });
+    }
+    const data = result;
+    res
+      .status(200)
+      .json({ message: "Berhasil Menarik Data", succeed: true, data });
+  });
+});
+
+app.get("/api/get-count-approve", (req, res) => {
+  const sql = `SELECT COUNT(id_pel) AS jml FROM transaksi WHERE stat = "nunggak" OR stat = "pending" OR stat = "lunas"`;
+
+  db.query(sql, (err, result) => {
+    if (err) {
+      return res
+        .status(500)
+        .json({ message: "Gagal Terkoneksi", succeed: false });
+    }
+    const data = result;
+    res
+      .status(200)
+      .json({ message: "Berhasil Menarik Data", succeed: true, data });
+  });
+});
+
+app.get("/api/get-count-sudah-bayar", (req, res) => {
+  const sql = `SELECT COUNT(id_pel) AS jml FROM transaksi WHERE stat = "lunas"`;
+
+  db.query(sql, (err, result) => {
+    if (err) {
+      return res
+        .status(500)
+        .json({ message: "Gagal Terkoneksi", succeed: false });
+    }
+    const data = result;
+    res
+      .status(200)
+      .json({ message: "Berhasil Menarik Data", succeed: true, data });
+  });
+});
+
+app.get("/api/get-count-belum-bayar", (req, res) => {
+  const sql = `SELECT COUNT(id_pel) AS jml FROM transaksi WHERE stat = "nunggak"`;
+
+  db.query(sql, (err, result) => {
+    if (err) {
+      return res
+        .status(500)
+        .json({ message: "Gagal Terkoneksi", succeed: false });
+    }
+    const data = result;
+    res
+      .status(200)
+      .json({ message: "Berhasil Menarik Data", succeed: true, data });
+  });
+});
+
+app.get("/api/get-all-pending", (req, res) => {
+  const sql = `SELECT a.nama, b.id_pel, b.id, a.email, b.url FROM transaksi AS b JOIN users AS a ON b.id_pel = a.id_pel  WHERE stat = "diajukan"`;
+
+  db.query(sql, (err, result) => {
+    const data = result;
+
+    res.status(200).json({ succeed: true, data });
+  });
+});
+
 // USER QUERY
 
 app.get("/api/pem-awal", (req, res) => {
@@ -466,7 +540,7 @@ app.get("/api/pem-awal-id-pel", (req, res) => {
 app.post("/api/upload-pengajuan-user", (req, res) => {
   const { time, pem_akhir, url, pem_awal, total, biaya, id_pel } = req.body;
 
-  const sql = `INSERT INTO transaksi (id_pel, pemakaian, pem_awal, pem_akhir, biaya, waktu, url) VALUES (?, ?, ?, ?, ?, ?, ?)`;
+  const sql = `INSERT INTO transaksi (id_pel, pemakaian, pem_awal, pem_akhir, biaya, waktu, url, stat) VALUES (?, ?, ?, ?, ?, ?, ?, "diajukan")`;
   db.query(
     sql,
     [id_pel, total, pem_awal, pem_akhir, biaya, time, url],
