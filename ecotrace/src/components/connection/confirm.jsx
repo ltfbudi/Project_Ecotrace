@@ -1,22 +1,35 @@
 import { useState } from "react";
 
 const Confirm = ({ noHP, setConfirm }) => {
+  const [selectedValue, setSelectedValue] = useState("");
+  const options = [
+    { label: "Pilih Kategori", value: "" }, // Opsi default / placeholder
+    { label: "Anggota KSM", value: "KSM" },
+    { label: "Rumah Tangga", value: "RT" },
+  ];
   const [form, setForm] = useState({
     id_pel: "",
   });
 
   const change = (e) => {
+    if (!setSelectedValue) {
+      return alert("Pilih kategori Pengguna!");
+    }
+
     setForm({
       ...form,
       [e.target.name]: e.target.value,
     });
+    setSelectedValue(e.target.value);
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const newForm = {
       ...form,
       noHP: noHP,
+      clasify: selectedValue,
     };
 
     try {
@@ -83,8 +96,21 @@ const Confirm = ({ noHP, setConfirm }) => {
             value={form.id_pel}
             onChange={change}
             placeholder="ID Pelanggan"
-            className="w-full border border-gray-400 rounded-full text-gray-800 placeholder-gray-300 h-11 px-5 focus:rounded-full focus:outline-gray-500"
+            className="w-full border border-gray-400 rounded-md text-gray-800 placeholder-gray-300 h-11 px-5 focus:rounded-md focus:outline-gray-500"
           />
+          <select
+            name="kategori"
+            value={selectedValue}
+            onChange={change}
+            className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md shadow-sm 
+                     bg-white border transition duration-150 ease-in-out"
+          >
+            {options.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
           <button
             type="submit"
             className="bg-linear-to-br from-nav to-gray-100 w-32 shadow-[0_0_6px_1px_rgba(0,0,0,0.2)] rounded-full py-2 text-white font-bold text-md transform hover:-translate-x-0.5 hover:-translate-y-0.5 transition duration-300"

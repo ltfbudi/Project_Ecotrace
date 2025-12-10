@@ -8,6 +8,7 @@ import CompProfile from "./assets/comp-profile";
 import RiwAdmin from "./assets/riw-admin";
 import RiwUser from "./assets/riw-user";
 import CompPengajuan from "./assets/comp-pengajuan";
+import UserAdmin from "./assets/userAd";
 
 const TheApp = ({ page, user }) => {
   const [create, setCreate] = useState(false);
@@ -63,6 +64,27 @@ const TheApp = ({ page, user }) => {
             Tambah Pengajuan
           </button>
         )}
+        {page === "User" && role === "admin" && (
+          <button
+            onClick={() => setCreate(true)}
+            className="bg-navBase text-white font-bold rounded-2xl px-4 py-2 text-sm flex items-center gap-2 w-fit order-2"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="14"
+              height="14"
+              fill="currentColor"
+              className="bi bi-plus-lg"
+              viewBox="0 1 16 16"
+            >
+              <path
+                fillRule="evenodd"
+                d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"
+              />
+            </svg>
+            Tambah User
+          </button>
+        )}
       </div>
 
       {/* CONTENT */}
@@ -92,6 +114,8 @@ const TheApp = ({ page, user }) => {
             <TagAdm user={user} create={create} setCreate={setCreate} />
           ) : page === "Riwayat" ? (
             <RiwAdmin />
+          ) : page === "User" ? (
+            <UserAdmin create={create} setCreate={setCreate} />
           ) : (
             ""
           )

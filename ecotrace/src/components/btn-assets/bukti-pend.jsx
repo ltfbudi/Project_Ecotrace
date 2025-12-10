@@ -1,4 +1,32 @@
 const Bukti = ({ setBukti, data }) => {
+  const approve = async () => {
+    const res = await fetch("/api/approve/payment", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ id: data.id }),
+    });
+
+    const temp = await res.json();
+    if (temp.succeed) {
+      const res2 = await fetch("/update/pem-awal/user", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id_pel: data.id_pel, pem_awal: data.pem_awal }),
+      });
+      const temp2 = await res2.json();
+      if (temp2.succeed) {
+        window.location.reload();
+      } else {
+        alert("Gagal 2");
+      }
+    } else {
+      alert("Gagal");
+    }
+  };
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex justify-center items-center overflow-y-auto w-full">
       <div className="bg-white rounded-xl w-3/5 px-5 py-4">
@@ -23,13 +51,31 @@ const Bukti = ({ setBukti, data }) => {
         <h1 className="text-center text-2xl text-gray-500 font-Inter">
           Bukti Pembayaran Pelanggan
         </h1>
-        <div className="w-full flex justify-center">
-          <div className="w-60 h-80 flex justify-center items-center align-middle ">
+        <div className="w-full flex flex-col">
+          <div className="w-full h-80 flex justify-center items-center align-middle">
             <img
               src={data.url}
               alt="preview"
-              className="w-full h-full align-middle"
+              className="w-60 h-full align-middle"
             />
+          </div>
+          <div className="flex flex-row w-full justify-center items-center">
+            <button
+              onClick={() => {
+                approve();
+              }}
+              className="font-bold mt-4 shadow-[0_0_6px_1px_rgba(0,0,0,0.2)] w-fit px-6 rounded-full py-1 bg-navBase text-white transform hover:-translate-x-0.5 hover:-translate-y-0.5 transition duration-300"
+            >
+              Approve
+            </button>
+            <button
+              onClick={() => {
+                alert("Coba");
+              }}
+              className="font-bold mt-4 shadow-[0_0_6px_1px_rgba(0,0,0,0.2)] w-fit px-6 rounded-full py-1 bg-navBase text-white transform hover:-translate-x-0.5 hover:-translate-y-0.5 transition duration-300"
+            >
+              Cancel
+            </button>
           </div>
         </div>
       </div>

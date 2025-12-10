@@ -1,50 +1,60 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 
-const CreateTag = ({ setCreate, user }) => {
+const CreateTag = ({ setCreate, user, pemAwal }) => {
   const fileRef = useRef(null);
   const [preview, setPreview] = useState(null);
+  const [selectedBulan, setSelectedBulan] = useState("");
+  const [selectedTahun, setSelectedTahun] = useState("");
   const [file, setFile] = useState(null);
-  const [awal, setAwal] = useState({});
   const [form, setForm] = useState({
-    time: "",
     pem_akhir: "",
   });
-  const totalPemakaian = form.pem_akhir - awal.pemakaian;
-  const harga = (form.pem_akhir - awal.pemakaian) * 10000;
+
+  const bulans = [
+    { label: "Pilih Bulan", value: "" }, // Opsi default / placeholder
+    { label: "Januari", value: "Januari" },
+    { label: "Februari", value: "Februari" },
+    { label: "Maret", value: "Maret" },
+    { label: "April", value: "April" },
+    { label: "Mei", value: "Mei" },
+    { label: "Juni", value: "Juni" },
+    { label: "Juli", value: "Juli" },
+    { label: "Agustus", value: "Agustus" },
+    { label: "September", value: "September" },
+    { label: "Oktober", value: "Oktober" },
+    { label: "November", value: "November" },
+    { label: "Desember", value: "Desember" },
+  ];
+
+  const tahuns = [
+    { label: "Pilih Tahun", value: "" }, // Opsi default / placeholder
+    { label: "2024", value: "2024" },
+    { label: "2025", value: "2025" },
+    { label: "2026", value: "2026" },
+    { label: "2027", value: "2027" },
+    { label: "2028", value: "2028" },
+    { label: "2029", value: "2029" },
+  ];
+
+  const totalPemakaian = form.pem_akhir - pemAwal.pemakaian;
+  const harga = totalPemakaian * 10000 + 10000;
 
   const change = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
-  };
-  const handleSubmit = async (err) => {
-    err.preventDefault();
+    const { name, value } = e.target; // Destructuring untuk kemudahan // Jika input adalah pem_akhir, update state form
 
-    const newForm = {
-      ...form,
-      pemakaian: form.pem_akhir - form.pem_awal,
-      biaya: (form.pem_akhir - form.pem_awal) * 10000,
-    };
-
-    try {
-      const res = await fetch("/api/add-tagihan-user", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newForm),
+    if (name === "pem_akhir") {
+      setForm({
+        ...form,
+        [name]: value,
       });
-
-      const data = await res.json();
-      if (data.succeed) {
-        alert(data.message);
-        window.location.reload();
-      } else {
-        alert(data.message);
-      }
-    } catch (err) {
-      alert(err.message);
+    }
+    // Jika input adalah bulan, update selectedBulan
+    else if (name === "bulan") {
+      setSelectedBulan(value);
+    }
+    // Jika input adalah tahun, update selectedTahun
+    else if (name === "tahun") {
+      setSelectedTahun(value);
     }
   };
 
@@ -65,8 +75,10 @@ const CreateTag = ({ setCreate, user }) => {
     if (temp.succeed) {
       const newForm = {
         ...form,
+        bulan: selectedBulan,
+        tahun: selectedTahun,
         url: temp.url,
-        pem_awal: awal.pemakaian,
+        pem_awal: pemAwal.pemakaian,
         total: totalPemakaian,
         biaya: harga,
         id_pel: user.id_pel,
@@ -92,26 +104,6 @@ const CreateTag = ({ setCreate, user }) => {
     }
   };
 
-  const history = async (id_pel, bulan) => {
-    if (!id_pel || !bulan) return alert("Gagal membuat tagihan");
-
-    const form = {
-      text: `Membuat tagihan pada ${bulan}`,
-      id_pel: id_pel,
-    };
-
-    const res = await fetch(`/api/his-acc-conf`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(form),
-    });
-
-    const temp = await res.json();
-    console.log(temp.message);
-  };
-
   const handleChoose = () => {
     fileRef.current.click();
   };
@@ -123,18 +115,6 @@ const CreateTag = ({ setCreate, user }) => {
     setFile(selected);
     setPreview(URL.createObjectURL(selected)); // preview lokal
   };
-
-  useEffect(() => {
-    const Get = async (id_pel) => {
-      const res = await fetch(`/api/pem-awal-id-pel?id_pel=${id_pel}`);
-
-      const temp = await res.json();
-      if (temp.succeed) {
-        setAwal(temp.data[0]);
-      }
-    };
-    Get(user.id_pel);
-  }, [user.id_pel]);
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex justify-center items-center overflow-y-auto py-6">
@@ -177,14 +157,35 @@ const CreateTag = ({ setCreate, user }) => {
             </div>
 
             <div>
-              <label>Waktu</label>
-              <input
-                type="date"
-                name="time"
-                value={form.time}
-                onChange={change}
-                className="w-full border border-gray-400 rounded-full h-9 px-4"
-              />
+              <label>Periode</label>
+              <div className="flex flex-row">
+                <select
+                  name="bulan"
+                  value={selectedBulan}
+                  onChange={change}
+                  className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md shadow-sm 
+                     bg-white border transition duration-150 ease-in-out"
+                >
+                  {bulans.map((bulan) => (
+                    <option key={bulan.value} value={bulan.value}>
+                      {bulan.label}
+                    </option>
+                  ))}
+                </select>
+                <select
+                  name="tahun"
+                  value={selectedTahun}
+                  onChange={change}
+                  className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md shadow-sm 
+                     bg-white border transition duration-150 ease-in-out"
+                >
+                  {tahuns.map((tahun) => (
+                    <option key={tahun.value} value={tahun.value}>
+                      {tahun.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
             <div className="flex flex-row w-full">
               <div className="w-3/6 flex flex-col">
@@ -192,7 +193,7 @@ const CreateTag = ({ setCreate, user }) => {
                 <input
                   type="text"
                   name="pem_awal"
-                  value={awal.pemakaian}
+                  value={pemAwal.pemakaian}
                   disabled
                   onChange={() => {}}
                   className="w-full border border-gray-400 rounded-full h-9 px-4"
@@ -222,11 +223,17 @@ const CreateTag = ({ setCreate, user }) => {
                 <input
                   type="text"
                   disabled
-                  value={"RP " + Number(harga).toLocaleString("id-ID")}
+                  value={"Rp " + Number(harga).toLocaleString("id-ID")}
                   className="w-full border border-gray-400 rounded-full h-9 px-4"
                 />
+                <h1>
+                  {totalPemakaian >= 15
+                    ? `Biaya Admin : Rp` + Number(10000).toLocaleString("id-ID")
+                    : ""}
+                </h1>
               </div>
             </div>
+
             {preview ? (
               <div className="w-full flex justify-center">
                 <div className="w-50 h-60 flex justify-center items-center align-middle ">
@@ -266,100 +273,6 @@ const CreateTag = ({ setCreate, user }) => {
             <div className="w-full flex justify-center">
               <button
                 onClick={() => {}}
-                type="submit"
-                className="bg-linear-to-br from-navBase to-nav mt-4 w-fit px-6 py-1 text-white font-bold rounded-full shadow-md hover:-translate-y-0.5 active:scale-95 transition"
-              >
-                Create
-              </button>
-            </div>
-          </form>
-        </div>
-      ) : user.role === "admin" ? (
-        <div className="bg-white w-11/12 sm:w-4/5 md:w-3/5 lg:w-2/5 px-6 py-5 rounded-xl shadow-lg">
-          <div className="flex justify-end mb-2">
-            <button onClick={() => setCreate(false)}>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="22"
-                height="22"
-                fill="currentColor"
-                className="bi bi-x text-gray-500"
-                viewBox="0 0 16 16"
-              >
-                <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
-              </svg>
-            </button>
-          </div>
-
-          <h1 className="text-xl text-navBase font-bold font-Inter mb-3">
-            Create Tagihan
-          </h1>
-
-          <form
-            onSubmit={handleSubmit}
-            className="flex flex-col gap-2 font-Inter"
-          >
-            <div>
-              <label>ID Pelanggan</label>
-              <input
-                type="text"
-                name="id_pel"
-                value={form.id_pel}
-                onChange={change}
-                className="w-full border border-gray-400 rounded-full h-9 px-4"
-                placeholder="ID Pelanggan"
-              />
-            </div>
-
-            <div>
-              <label>Waktu</label>
-              <input
-                type="date"
-                name="time"
-                value={form.time}
-                onChange={change}
-                className="w-full border border-gray-400 rounded-full h-9 px-4"
-              />
-            </div>
-
-            <div className="w-full flex flex-col sm:w-4/5">
-              <label>Pemakaian Awal</label>
-              <input
-                type="text"
-                name="pem_awal"
-                value={form.pem_awal}
-                onChange={change}
-                className="w-full border border-gray-400 rounded-full h-9 px-4"
-                placeholder="Pemakaian Awal"
-              />
-
-              <label className="mt-2">Pemakaian Akhir</label>
-              <input
-                type="text"
-                name="pem_akhir"
-                value={form.pem_akhir}
-                onChange={change}
-                className="w-full border border-gray-400 rounded-full h-9 px-4"
-                placeholder="Pemakaian Akhir"
-              />
-
-              <div className="flex items-center gap-2 mt-3">
-                <label className="w-1/3 sm:w-1/5">Biaya Total</label>
-                <input
-                  type="text"
-                  disabled
-                  value={
-                    "RP " +
-                    Number(
-                      (form.pem_akhir - form.pem_awal) * 10000
-                    ).toLocaleString("id-ID")
-                  }
-                  className="w-2/3 sm:w-4/5 border border-gray-400 rounded-full h-9 px-4"
-                />
-              </div>
-
-              <button
-                onClick={() => history(form.id_pel, form.time)}
                 type="submit"
                 className="bg-linear-to-br from-navBase to-nav mt-4 w-fit px-6 py-1 text-white font-bold rounded-full shadow-md hover:-translate-y-0.5 active:scale-95 transition"
               >

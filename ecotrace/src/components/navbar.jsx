@@ -10,7 +10,6 @@ const Sidebar = ({ user, open, setOpen }) => {
   const menuAdmin = [
     { name: "Dashboard", path: "/dashboard" },
     { name: "Tagihan", path: "/tagihan" },
-    { name: "Riwayat", path: "/riwayat" },
     { name: "User", path: "/user" },
     { name: "Pengajuan", path: "/pengajuan" },
     { name: "Profile", path: "/profile" },
@@ -19,7 +18,6 @@ const Sidebar = ({ user, open, setOpen }) => {
   const menuUser = [
     { name: "Dashboard", path: "/dashboard" },
     { name: "Tagihan", path: "/tagihan" },
-    { name: "Riwayat", path: "/riwayat" },
     { name: "Pengajuan", path: "/pengajuan" },
     { name: "Profile", path: "/profile" },
   ];

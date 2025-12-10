@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-const Pay = ({ who, setPay, setURL }) => {
+const Pay = ({ setPay, data }) => {
   const fileRef = useRef(null);
   const [preview, setPreview] = useState(null);
   const [file, setFile] = useState(null);
@@ -32,8 +32,8 @@ const Pay = ({ who, setPay, setURL }) => {
 
     if (temp.succeed) {
       const form = {
-        invo: who.invo,
         url: temp.url,
+        id: data.id,
       };
 
       const res = await fetch("/api/update-status-tagihan", {
@@ -104,9 +104,9 @@ const Pay = ({ who, setPay, setURL }) => {
         <h1 className="text-2xl font-Inter font-bold text-gray-600 text-center  ">
           Pembayaran
         </h1>
-        <p>{`Invoice: ${who.invo}`}</p>
-        <p>{`Pemakaian: ${who.pemakaian} m³`}</p>
-        <p>{`Biaya:  Rp  ` + Number(who.biaya).toLocaleString("id-ID")}</p>
+        <p>{`ID Pelanggan: ${data.id_pel}`}</p>
+        <p>{`Pemakaian: ${data.pemakaian} m³`}</p>
+        <p>{`Biaya:  Rp  ` + Number(data.biaya).toLocaleString("id-ID")}</p>
         <p>Pemabayaran dapat dilakukan dengan transfer ke: </p>
         <p>082111164670 DANA a/n Naufal Adli</p>
         <p>059501040133507 BRI a/n Naufal Adli</p>
@@ -124,7 +124,7 @@ const Pay = ({ who, setPay, setURL }) => {
           <div className="w-full flex justify-center">
             <div className="w-50 h-60 flex justify-center items-center align-middle ">
               <img
-                src={``}
+                src={`https://tse1.mm.bing.net/th/id/OIP.ksezYmQQItwKOBx_9d2Q-AHaHa?cb=ucfimg2&ucfimg=1&rs=1&pid=ImgDetMain&o=7&rm=3`}
                 alt="preview"
                 className="w-full h-full align-middle"
               />
@@ -149,7 +149,6 @@ const Pay = ({ who, setPay, setURL }) => {
         <button
           onClick={() => {
             handleUpload();
-            historyBayar(who.id_pel);
           }}
           className="font-bold mt-4 shadow-[0_0_6px_1px_rgba(0,0,0,0.2)] w-fit px-6 rounded-full py-1 bg-navBase text-white transform hover:-translate-x-0.5 hover:-translate-y-0.5 transition duration-300"
         >

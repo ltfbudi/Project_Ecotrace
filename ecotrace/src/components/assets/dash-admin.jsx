@@ -1,64 +1,37 @@
 import { useEffect, useState } from "react";
-import Confirm from "../connection/confirm";
-import CreateTag from "../btn-assets/tag-create";
+import TagUser from "../connection/tag-user";
+import CreateTagAdm from "../btn-assets/tag-create-adm";
+import Bukti from "../btn-assets/bukti-pend";
 
 const DashAdm = ({ user }) => {
   const [dataPending, setDataPending] = useState(null);
-  const [noHP, setNo] = useState("");
+  const [dataApprove, setDataApprove] = useState(null);
+  const [dataBlmBayar, setDataBlmBayar] = useState(null);
+  const [dataBaruBayar, setDataBaruBayar] = useState(null);
+  const [dataSdhBayar, setDataSdhBayar] = useState(null);
   const [create, setCreate] = useState(false);
-  const [who, setWho] = useState({
-    id: "",
+  const [bukti, setBukti] = useState(false);
+  const [who, setWho] = useState({});
+  const [url, setUrl] = useState({
     url: "",
+    id: "",
+    id_pel: "",
+    pem_awal: "",
   });
+
   const [jmlPending, setJmlPending] = useState(0);
   const [jmlApprove, setJmlApprove] = useState(0);
   const [jmlBlmBayar, setJmlBlmBayar] = useState(0);
   const [jmlSdhBayar, setJmlSdhBayar] = useState(0);
 
-  const decline = async (noHP) => {
-    const res = await fetch(`/api/decline-acc/${noHP}`, { method: "DELETE" });
-    const temp = await res.json();
-    alert(temp.message);
-    window.location.reload();
-  };
-
-  const deleteAcc = async (id_pel) => {
-    const res = await fetch(`/api/delete-trans-acc/${id_pel}`, {
-      method: "DELETE",
-    });
+  const getPemAkhir = async (id) => {
+    const res = await fetch(`/api/pengajuan-user-by-id?id=${id}`);
 
     const temp = await res.json();
     if (temp.succeed) {
-      const res = await fetch(`/api/delete-acc/${id_pel}`, {
-        method: "DELETE",
-      });
-
-      const temp2 = await res.json();
-      alert(temp2.message);
-      window.location.reload();
+      console.log(temp.data[0]);
+      setWho(temp.data[0]);
     }
-  };
-
-  const historyDelete = async (id_pel) => {
-    if (!id_pel) return alert("Gagal membuat tagihan");
-    const form = {
-      text: `Menghapus Akun dengan ID Pelanggan ${id_pel}`,
-      id_pel,
-    };
-    await fetch(`/api/his-acc-conf`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
-    });
-  };
-
-  const history = async (noHP) => {
-    const form = { text: `Konfirmasi Akun dengan Nomor Telepon ${noHP}` };
-    await fetch(`/api/his-confirm`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
-    });
   };
 
   useEffect(() => {
@@ -106,13 +79,45 @@ const DashAdm = ({ user }) => {
         console.log(temp.message);
       }
     };
-    const GetDataPending = async () => {
+    const GetDataPengajuanPending = async () => {
       const res = await fetch("/api/get-all-pending");
 
       const temp = await res.json();
       if (temp.succeed) {
         setDataPending(temp.data);
-        console.log(temp.data);
+      }
+    };
+
+    const GetDataApprove = async () => {
+      const res = await fetch("/api/get-all-approve");
+
+      const temp = await res.json();
+      if (temp.succeed) {
+        setDataApprove(temp.data);
+      }
+    };
+    const GetDataBayarPending = async () => {
+      const res = await fetch("/api/get-all-bayar-pending");
+
+      const temp = await res.json();
+      if (temp.succeed) {
+        setDataBlmBayar(temp.data);
+      }
+    };
+    const GetDataBayarLunas = async () => {
+      const res = await fetch("/api/get-all-bayar-lunas");
+
+      const temp = await res.json();
+      if (temp.succeed) {
+        setDataSdhBayar(temp.data);
+      }
+    };
+    const GetDataBaruBayar = async () => {
+      const res = await fetch("/api/get-all-baru-bayar");
+
+      const temp = await res.json();
+      if (temp.succeed) {
+        setDataBaruBayar(temp.data);
       }
     };
 
@@ -120,11 +125,17 @@ const DashAdm = ({ user }) => {
     Get2();
     Get3();
     Get4();
-    GetDataPending();
+    GetDataPengajuanPending();
+    GetDataApprove();
+    GetDataBayarPending();
+    GetDataBayarLunas();
+    GetDataBaruBayar();
   }, []);
 
   return (
     <div className="w-full">
+      {create && <CreateTagAdm setCreate={setCreate} user={user} who={who} />}
+      {bukti && <Bukti setBukti={setBukti} data={url} />}
       <div className="flex flex-col sm:flex-row gap-2">
         {/* Row Pertama */}
         <div className="w-full sm:w-3/6 flex flex-col md:flex-row gap-2">
@@ -233,6 +244,7 @@ const DashAdm = ({ user }) => {
                 </th>
                 <th className="sm:px-2 py-2 font-semibold border-b">Nama</th>
                 <th className="sm:px-2 py-2 font-semibold border-b">Email</th>
+                <th className="sm:px-2 py-2 font-semibold border-b">Periode</th>
                 <th className="sm:px-2 py-2 font-semibold border-b">Aksi</th>
               </tr>
             </thead>
@@ -249,10 +261,16 @@ const DashAdm = ({ user }) => {
                       <td className="xs:px-1 sm:px-2 py-2 max-w-[150px] truncate sm:whitespace-normal border">
                         {item.email}
                       </td>
+                      <td className="xs:px-1 sm:px-2 py-2 max-w-[150px] truncate sm:whitespace-normal border">
+                        {item.tanggal_format}
+                      </td>
                       <td className="sm:px-2 border-b">
                         <div className="bg-navBase w-fit p-1 rounded-sm">
                           <svg
-                            onClick={() => {}}
+                            onClick={() => {
+                              getPemAkhir(item.id);
+                              setCreate(true);
+                            }}
                             xmlns="http://www.w3.org/2000/svg"
                             width="16"
                             height="16"
@@ -279,26 +297,54 @@ const DashAdm = ({ user }) => {
                 </th>
                 <th className="sm:px-2 py-2 font-semibold border-b">Nama</th>
                 <th className="sm:px-2 py-2 font-semibold border-b">Email</th>
+                <th className="sm:px-2 py-2 font-semibold border-b">Periode</th>
                 <th className="sm:px-2 py-2 font-semibold border-b">Aksi</th>
               </tr>
             </thead>
 
             <tbody className="text-gray-700 text-center text-xs sm:text-sm">
-              <tr className="hover:bg-gray-50">
-                <td className="xs:px-1 sm:px-2 py-2 border-b">asdasd</td>
-                <td className="xs:px-1 sm:px-2 py-2 border">asdsa</td>
-                <td className="xs:px-1 sm:px-2 py-2 max-w-[150px] truncate sm:whitespace-normal border">
-                  aoisjdasjdo
-                </td>
-                <td className="sm:px-2 py-2 border-b">psakdpsaokd</td>
-              </tr>
+              {Array.isArray(dataApprove) && dataApprove.length > 0
+                ? dataApprove.map((item, index) => (
+                    <tr key={index} className="hover:bg-gray-50">
+                      <td className="xs:px-1 sm:px-2 py-2 border-b">
+                        {item.id_pel}
+                      </td>
+                      <td className="xs:px-1 sm:px-2 py-2 border">
+                        {item.nama}
+                      </td>
+                      <td className="xs:px-1 sm:px-2 py-2 max-w-[150px] truncate sm:whitespace-normal border">
+                        {item.email}
+                      </td>
+                      <td className="xs:px-1 sm:px-2 py-2 max-w-[150px] truncate sm:whitespace-normal border">
+                        {item.tanggal_format}
+                      </td>
+                      <td className="sm:px-2 border-b">
+                        <div className="bg-navBase w-fit p-1 rounded-sm">
+                          <svg
+                            onClick={() => {
+                              getPemAkhir(item.id);
+                              setCreate(true);
+                            }}
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="16"
+                            height="16"
+                            fill="currentColor"
+                            className="bi bi-eye-fill text-white"
+                            viewBox="0 0 16 16"
+                          >
+                            <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0" />
+                            <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7" />
+                          </svg>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                : ""}
             </tbody>
           </table>
         </div>
         <div className="w-full md:w-full">
-          <h1 className="text-md md:text-lg">
-            Informasi Pengajuan- Dalam Revisi
-          </h1>
+          <h1 className="text-md md:text-lg">Informasi Pembayar - Pending</h1>
           <table className="w-full border-collapse">
             <thead className="bg-gray-100 text-gray-700 text-center text-xs sm:text-sm">
               <tr>
@@ -307,22 +353,168 @@ const DashAdm = ({ user }) => {
                 </th>
                 <th className="sm:px-2 py-2 font-semibold border-b">Nama</th>
                 <th className="sm:px-2 py-2 font-semibold border-b">Email</th>
+                <th className="sm:px-2 py-2 font-semibold border-b">Periode</th>
                 <th className="sm:px-2 py-2 font-semibold border-b">Aksi</th>
               </tr>
             </thead>
 
             <tbody className="text-gray-700 text-center text-xs sm:text-sm">
-              <tr className="hover:bg-gray-50">
-                <td className="xs:px-1 sm:px-2 py-2 border-b">asdasd</td>
-                <td className="xs:px-1 sm:px-2 py-2 border">asdsa</td>
-                <td className="xs:px-1 sm:px-2 py-2 max-w-[150px] truncate sm:whitespace-normal border">
-                  aoisjdasjdo
-                </td>
-                <td className="sm:px-2 py-2 border-b">psakdpsaokd</td>
-              </tr>
+              {Array.isArray(dataBlmBayar) && dataBlmBayar.length > 0
+                ? dataBlmBayar.map((item, index) => (
+                    <tr key={index} className="hover:bg-gray-50">
+                      <td className="xs:px-1 sm:px-2 py-2 border-b">
+                        {item.id_pel}
+                      </td>
+                      <td className="xs:px-1 sm:px-2 py-2 border">
+                        {item.nama}
+                      </td>
+                      <td className="xs:px-1 sm:px-2 py-2 max-w-[150px] truncate sm:whitespace-normal border">
+                        {item.email}
+                      </td>
+                      <td className="xs:px-1 sm:px-2 py-2 max-w-[150px] truncate sm:whitespace-normal border">
+                        {item.tanggal_format}
+                      </td>
+                      <td className="sm:px-2 border-b">
+                        <div className="bg-navBase w-fit p-1 rounded-sm">
+                          <svg
+                            onClick={() => {
+                              getPemAkhir(item.id);
+                              setCreate(true);
+                            }}
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="16"
+                            height="16"
+                            fill="currentColor"
+                            className="bi bi-eye-fill text-white"
+                            viewBox="0 0 16 16"
+                          >
+                            <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0" />
+                            <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7" />
+                          </svg>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                : ""}
             </tbody>
           </table>
-          <div></div>
+        </div>
+        <div className="w-full md:w-full">
+          <h1 className="text-md md:text-lg">Informasi Pembayar - Approval</h1>
+          <table className="w-full border-collapse">
+            <thead className="bg-gray-100 text-gray-700 text-center text-xs sm:text-sm">
+              <tr>
+                <th className="sm:px-2 py-2 font-semibold border-b">
+                  ID Pelanggan
+                </th>
+                <th className="sm:px-2 py-2 font-semibold border-b">Nama</th>
+                <th className="sm:px-2 py-2 font-semibold border-b">Email</th>
+                <th className="sm:px-2 py-2 font-semibold border-b">Periode</th>
+                <th className="sm:px-2 py-2 font-semibold border-b">Aksi</th>
+              </tr>
+            </thead>
+
+            <tbody className="text-gray-700 text-center text-xs sm:text-sm">
+              {Array.isArray(dataBaruBayar) && dataBaruBayar.length > 0
+                ? dataBaruBayar.map((item, index) => (
+                    <tr key={index} className="hover:bg-gray-50">
+                      <td className="xs:px-1 sm:px-2 py-2 border-b">
+                        {item.id_pel}
+                      </td>
+                      <td className="xs:px-1 sm:px-2 py-2 border">
+                        {item.nama}
+                      </td>
+                      <td className="xs:px-1 sm:px-2 py-2 max-w-[150px] truncate sm:whitespace-normal border">
+                        {item.email}
+                      </td>
+                      <td className="xs:px-1 sm:px-2 py-2 max-w-[150px] truncate sm:whitespace-normal border">
+                        {item.tanggal_format}
+                      </td>
+                      <td className="sm:px-2 border-b">
+                        <div className="bg-navBase w-fit p-1 rounded-sm">
+                          <svg
+                            onClick={() => {
+                              setUrl({
+                                url: item.url_bukti,
+                                id: item.id,
+                                id_pel: item.id_pel,
+                                pem_awal: item.pem_akhir,
+                              });
+                              setBukti(true);
+                            }}
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="16"
+                            height="16"
+                            fill="currentColor"
+                            className="bi bi-eye-fill text-white"
+                            viewBox="0 0 16 16"
+                          >
+                            <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0" />
+                            <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7" />
+                          </svg>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                : ""}
+            </tbody>
+          </table>
+        </div>
+        <div className="w-full md:w-full">
+          <h1 className="text-md md:text-lg">Informasi Pembayar - Lunas</h1>
+          <table className="w-full border-collapse">
+            <thead className="bg-gray-100 text-gray-700 text-center text-xs sm:text-sm">
+              <tr>
+                <th className="sm:px-2 py-2 font-semibold border-b">
+                  ID Pelanggan
+                </th>
+                <th className="sm:px-2 py-2 font-semibold border-b">Nama</th>
+                <th className="sm:px-2 py-2 font-semibold border-b">Email</th>
+                <th className="sm:px-2 py-2 font-semibold border-b">Periode</th>
+                <th className="sm:px-2 py-2 font-semibold border-b">Aksi</th>
+              </tr>
+            </thead>
+
+            <tbody className="text-gray-700 text-center text-xs sm:text-sm">
+              {Array.isArray(dataSdhBayar) && dataSdhBayar.length > 0
+                ? dataSdhBayar.map((item, index) => (
+                    <tr key={index} className="hover:bg-gray-50">
+                      <td className="xs:px-1 sm:px-2 py-2 border-b">
+                        {item.id_pel}
+                      </td>
+                      <td className="xs:px-1 sm:px-2 py-2 border">
+                        {item.nama}
+                      </td>
+                      <td className="xs:px-1 sm:px-2 py-2 max-w-[150px] truncate sm:whitespace-normal border">
+                        {item.email}
+                      </td>
+                      <td className="xs:px-1 sm:px-2 py-2 max-w-[150px] truncate sm:whitespace-normal border">
+                        {item.tanggal_format}
+                      </td>
+                      <td className="sm:px-2 border-b">
+                        <div className="bg-navBase w-fit p-1 rounded-sm">
+                          <svg
+                            onClick={() => {
+                              getPemAkhir(item.id);
+                              setCreate(true);
+                            }}
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="16"
+                            height="16"
+                            fill="currentColor"
+                            className="bi bi-eye-fill text-white"
+                            viewBox="0 0 16 16"
+                          >
+                            <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0" />
+                            <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7" />
+                          </svg>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                : ""}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

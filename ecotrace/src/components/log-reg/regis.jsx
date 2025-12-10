@@ -1,4 +1,3 @@
-import { useState } from "react";
 import RegisLogic from "../connection/regis-logic";
 
 const Regis = ({ con, name, setName }) => {

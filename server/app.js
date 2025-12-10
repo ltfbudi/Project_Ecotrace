@@ -79,7 +79,7 @@ app.post("/api/add-tagihan-user", (req, res) => {
 
 app.get("/api/get-user-all", (req, res) => {
   try {
-    const sql = `SELECT nama, noHP, id_pel, alamat, verif FROM users WHERE role = "user"`;
+    const sql = `SELECT * FROM users WHERE role = "user"`;
 
     db.query(sql, (err, result) => {
       if (err) {
@@ -103,10 +103,10 @@ app.get("/api/get-user-all", (req, res) => {
 });
 
 app.post("/api/confirm-acc", (req, res) => {
-  const { id_pel, noHP } = req.body;
-  const sql = `UPDATE users SET verif = "yes", id_pel = ? WHERE noHP = ?`;
+  const { id_pel, noHP, clasify } = req.body;
+  const sql = `UPDATE users SET verif = "yes", id_pel = ?, clasify = ? WHERE noHP = ?`;
 
-  db.query(sql, [id_pel, noHP], (err, result) => {
+  db.query(sql, [id_pel, clasify, noHP], (err, result) => {
     if (err) {
       return res
         .status(500)
@@ -315,7 +315,7 @@ app.get("/api/get-count-sudah-bayar", (req, res) => {
 });
 
 app.get("/api/get-count-belum-bayar", (req, res) => {
-  const sql = `SELECT COUNT(id_pel) AS jml FROM transaksi WHERE stat = "nunggak"`;
+  const sql = `SELECT COUNT(id_pel) AS jml FROM transaksi WHERE stat = "pending"`;
 
   db.query(sql, (err, result) => {
     if (err) {
@@ -331,12 +331,275 @@ app.get("/api/get-count-belum-bayar", (req, res) => {
 });
 
 app.get("/api/get-all-pending", (req, res) => {
-  const sql = `SELECT a.nama, b.id_pel, b.id, a.email, b.url FROM transaksi AS b JOIN users AS a ON b.id_pel = a.id_pel  WHERE stat = "diajukan"`;
+  const sql = `SELECT a.nama, b.id_pel, b.id, a.email, b.url, b.waktu FROM transaksi AS b JOIN users AS a ON b.id_pel = a.id_pel  WHERE stat = "diajukan"`;
 
   db.query(sql, (err, result) => {
-    const data = result;
+    const data = result.map((item) => {
+      const tanggal = new Date(item.waktu); // ganti sesuai nama kolom
+
+      const tgl = tanggal.toLocaleDateString("id-ID", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      });
+
+      return { ...item, tanggal_format: tgl };
+    });
 
     res.status(200).json({ succeed: true, data });
+  });
+});
+
+app.get("/api/get-noVerif", (req, res) => {
+  const sql = `SELECT * FROM users WHERE role = "user" AND verif = "no"`;
+
+  db.query(sql, (err, result) => {
+    if (err) {
+      return res.status(500).json({ succeed: false });
+    }
+    const data = result;
+    res.status(200).json({ succeed: true, data });
+  });
+});
+
+app.get("/api/get-Verif", (req, res) => {
+  const sql = `SELECT * FROM users WHERE role = "user" AND verif = "yes"`;
+
+  db.query(sql, (err, result) => {
+    if (err) {
+      return res.status(500).json({ succeed: false });
+    }
+    const data = result;
+    res.status(200).json({ succeed: true, data });
+  });
+});
+
+app.get("/api/pengajuan-user-by-id", (req, res) => {
+  const { id } = req.query;
+
+  const sql = `SELECT * FROM transaksi WHERE id = ?`;
+
+  db.query(sql, [id], (err, result) => {
+    if (err) {
+      return res.status(500).json({ succeed: false });
+    }
+    const data = result.map((item) => {
+      const tanggal = new Date(item.waktu); // ganti sesuai nama kolom
+
+      const tgl = tanggal.toLocaleDateString("id-ID", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      });
+
+      return { ...item, tanggal_format: tgl };
+    });
+
+    res.status(200).json({ succeed: true, data });
+  });
+});
+
+app.post("/api/give-revisi-pengajuan", (req, res) => {
+  const { isiRevisi, id } = req.body;
+  console.log(id);
+
+  const sql = `UPDATE transaksi SET stat_rev = "yes", revisi = ? WHERE id = ?`;
+  db.query(sql, [isiRevisi, id], (err) => {
+    if (err) {
+      return res.status(500).json({ succeed: false });
+    }
+
+    res.status(200).json({ succeed: true });
+  });
+});
+
+app.post("/api/approve-pengajuan-user", (req, res) => {
+  const { id } = req.body;
+
+  const sql = `UPDATE transaksi SET revisi = NULL, stat_rev="clear", stat="pending" WHERE id = ?`;
+
+  db.query(sql, [id], (err) => {
+    if (err) {
+      return res.status(500).json({ succeed: false });
+    }
+
+    res.status(200).json({ succeed: true });
+  });
+});
+
+app.get("/api/get-all-approve", (req, res) => {
+  const sql = `SELECT a.nama, b.id_pel, b.id, a.email, b.url, b.waktu FROM transaksi AS b JOIN users AS a ON b.id_pel = a.id_pel  WHERE stat = "pending" or stat="lunas" or stat="terbayar"`;
+
+  db.query(sql, (err, result) => {
+    const data = result.map((item) => {
+      const tanggal = new Date(item.waktu); // ganti sesuai nama kolom
+
+      const tgl = tanggal.toLocaleDateString("id-ID", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      });
+
+      return { ...item, tanggal_format: tgl };
+    });
+
+    res.status(200).json({ succeed: true, data });
+  });
+});
+
+app.get("/api/get-all-bayar-pending", (req, res) => {
+  const sql = `SELECT a.nama, b.id_pel, b.id, a.email, b.url, b.waktu FROM transaksi AS b JOIN users AS a ON b.id_pel = a.id_pel  WHERE stat = "pending"`;
+
+  db.query(sql, (err, result) => {
+    const data = result.map((item) => {
+      const tanggal = new Date(item.waktu); // ganti sesuai nama kolom
+
+      const tgl = tanggal.toLocaleDateString("id-ID", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      });
+
+      return { ...item, tanggal_format: tgl };
+    });
+
+    res.status(200).json({ succeed: true, data });
+  });
+});
+
+app.get("/api/get-all-bayar-lunas", (req, res) => {
+  const sql = `SELECT a.nama, b.id_pel, b.id, a.email, b.url, b.waktu FROM transaksi AS b JOIN users AS a ON b.id_pel = a.id_pel  WHERE stat = "lunas"`;
+
+  db.query(sql, (err, result) => {
+    const data = result.map((item) => {
+      const tanggal = new Date(item.waktu); // ganti sesuai nama kolom
+
+      const tgl = tanggal.toLocaleDateString("id-ID", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      });
+
+      return { ...item, tanggal_format: tgl };
+    });
+
+    res.status(200).json({ succeed: true, data });
+  });
+});
+
+app.get("/api/get-all-baru-bayar", (req, res) => {
+  const sql = `SELECT a.nama, b.id_pel, b.id, a.email, b.url, b.url_bukti,b.waktu FROM transaksi AS b JOIN users AS a ON b.id_pel = a.id_pel  WHERE stat = "terbayar"`;
+
+  db.query(sql, (err, result) => {
+    const data = result.map((item) => {
+      const tanggal = new Date(item.waktu); // ganti sesuai nama kolom
+
+      const tgl = tanggal.toLocaleDateString("id-ID", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      });
+
+      return { ...item, tanggal_format: tgl };
+    });
+
+    res.status(200).json({ succeed: true, data });
+  });
+});
+
+app.post("/api/registradi-dari-admin", async (req, res) => {
+  const { noHP, nama, pass, passConfirm, email, alamat, id_pel, clasify } =
+    req.body;
+
+  if (
+    !noHP ||
+    !nama ||
+    !pass ||
+    !passConfirm ||
+    !email ||
+    !alamat ||
+    !clasify ||
+    !id_pel
+  ) {
+    return res
+      .status(400)
+      .json({ message: "Ada data yang kosong!", succeed: false });
+  }
+  if (!val.isMobilePhone(noHP, "id-ID")) {
+    return res
+      .status(400)
+      .json({ message: "Format Nomor HP salah", succeed: false });
+  }
+  if (!val.isEmail(email)) {
+    return res
+      .status(400)
+      .json({ message: "Email tidak sesuai format", succeed: false });
+  }
+  if (pass.length < 8) {
+    return res
+      .status(400)
+      .json({ message: "Password kurang panjang!", succeed: false });
+  }
+  if (pass !== passConfirm) {
+    return res
+      .status(400)
+      .json({ message: "Password Tidak Match!", succeed: false });
+  }
+
+  try {
+    const hashedPass = await bcrypt.hash(pass, 10);
+
+    const sql = `INSERT INTO users (noHP, nama, pass, email, alamat, clasify, verif, id_pel) VALUES (?, ?, ?, ?, ?, ?, "yes", ?)`;
+
+    db.query(
+      sql,
+      [noHP, nama, hashedPass, email, alamat, clasify, id_pel],
+      (err) => {
+        if (err) {
+          if (err.code === "ER_DUP_ENTRY") {
+            return res
+              .status(400)
+              .json({ message: "Nomor HP Sudah terdaftar", succeed: false });
+          }
+          return res
+            .status(500)
+            .json({ message: "Terjadi kesalahan pada Server", succeed: false });
+        }
+        res
+          .status(201)
+          .json({ message: "Registrasi berhasil dilakukan", succeed: true });
+      }
+    );
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: "Terjadi kesalahan pada Server", succeed: false });
+  }
+});
+
+app.post("/api/approve/payment", (req, res) => {
+  const { id } = req.body;
+
+  const sql = `UPDATE transaksi SET stat = "lunas" WHERE id = ?`;
+  db.query(sql, [id], (err) => {
+    if (err) {
+      return res.status(500).json({ succeed: false });
+    }
+
+    res.status(200).json({ succeed: true });
+  });
+});
+
+app.post("/update/pem-awal/user", (req, res) => {
+  const { id_pel, pem_awal } = req.body;
+
+  const sql = `UPDATE pem_awal SET pemakaian = ? WHERE id_pel = ?`;
+  db.query(sql, [pem_awal, id_pel], (err) => {
+    if (err) {
+      return res.status(500).json({ succeed: false });
+    }
+
+    res.status(200).json({ succeed: true });
   });
 });
 
@@ -395,7 +658,7 @@ app.post("/api/upload-bayar", upload.single("file"), async (req, res) => {
 app.get("/api/data-transaksi", (req, res) => {
   const { id_pel } = req.query;
   try {
-    const sql = `SELECT a.noHP, a.nama, b.pem_awal, b.pem_akhir, b.invoice, b.pemakaian, b.biaya, b.stat, b.id_pel, a.alamat, b.url_bukti, DATE_FORMAT(b.waktu, '%M') AS bulan FROM users AS a JOIN transaksi AS b ON a.id_pel = b.id_pel WHERE a.id_pel = ? ORDER BY b.waktu DESC`;
+    const sql = `SELECT a.noHP, a.nama, a.alamat,b.id, b.pem_awal, b.pem_akhir, b.pemakaian, b.biaya, b.stat, b.id_pel, a.alamat, b.url, b.bulan, b.tahun FROM users AS a JOIN transaksi AS b ON a.id_pel = b.id_pel WHERE a.id_pel = ? AND b.stat = "pending" ORDER BY b.bulan DESC, b.tahun DESC`;
 
     db.query(sql, [id_pel], (err, result) => {
       if (err) {
@@ -538,12 +801,13 @@ app.get("/api/pem-awal-id-pel", (req, res) => {
 });
 
 app.post("/api/upload-pengajuan-user", (req, res) => {
-  const { time, pem_akhir, url, pem_awal, total, biaya, id_pel } = req.body;
+  const { pem_akhir, bulan, tahun, url, pem_awal, total, biaya, id_pel } =
+    req.body;
 
-  const sql = `INSERT INTO transaksi (id_pel, pemakaian, pem_awal, pem_akhir, biaya, waktu, url, stat) VALUES (?, ?, ?, ?, ?, ?, ?, "diajukan")`;
+  const sql = `INSERT INTO transaksi (id_pel, pemakaian, pem_awal, pem_akhir, biaya, url, stat, bulan, tahun) VALUES (?, ?, ?, ?, ?, ?, "diajukan", ?, ?)`;
   db.query(
     sql,
-    [id_pel, total, pem_awal, pem_akhir, biaya, time, url],
+    [id_pel, total, pem_awal, pem_akhir, biaya, url, bulan, tahun],
     (err) => {
       if (err) {
         return res
@@ -558,10 +822,42 @@ app.post("/api/upload-pengajuan-user", (req, res) => {
   );
 });
 
+app.get("/api/get-user-bayar-lunas", (req, res) => {
+  const { id_pel } = req.query;
+
+  const sql = `SELECT * FROM transaksi WHERE id_pel = ? AND stat="lunas"`;
+
+  db.query(sql, [id_pel], (err, result) => {
+    if (err) {
+      return res
+        .status(500)
+        .json({ Message: "Gagal Terkoneksi!", succeed: false });
+    }
+    const data = result;
+    res.status(200).json({ succeed: true, data });
+  });
+});
+
+app.get("/api/get-user-revisi", (req, res) => {
+  const { id_pel } = req.query;
+
+  const sql = `SELECT * FROM transaksi WHERE id_pel = ? AND stat_rev="yes"`;
+
+  db.query(sql, [id_pel], (err, result) => {
+    if (err) {
+      return res
+        .status(500)
+        .json({ Message: "Gagal Terkoneksi!", succeed: false });
+    }
+    const data = result;
+    res.status(200).json({ succeed: true, data });
+  });
+});
+
 // ALL ROLE
 
 app.post("/api/update-status-tagihan", async (req, res) => {
-  const { invo, url } = req.body;
+  const { url, id } = req.body;
 
   if (!url) {
     return res
@@ -569,8 +865,8 @@ app.post("/api/update-status-tagihan", async (req, res) => {
       .json({ message: "URL tidak terbuat!", succeed: false });
   }
 
-  const sql = `UPDATE transaksi SET stat = "pending", url_bukti = ? WHERE invoice = ?`;
-  db.query(sql, [url, invo], (err) => {
+  const sql = `UPDATE transaksi SET stat = "terbayar", url_bukti = ? WHERE id = ?`;
+  db.query(sql, [url, id], (err) => {
     if (err) {
       return res
         .status(500)

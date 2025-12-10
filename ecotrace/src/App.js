@@ -8,7 +8,6 @@ import {
   useLocation,
 } from "react-router-dom";
 import TheApp from "./components/theApp";
-import Navbar2 from "./components/navbar2";
 
 function Layout({ children }) {
   const [open, setOpen] = useState(true);
@@ -75,6 +74,10 @@ function App() {
             <Route
               path="/profile"
               element={<TheApp page={"Profile"} user={user} />}
+            />
+            <Route
+              path="/user"
+              element={<TheApp page={"User"} user={user} />}
             />
           </Routes>
         </Layout>
