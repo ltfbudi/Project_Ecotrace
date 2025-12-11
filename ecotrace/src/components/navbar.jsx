@@ -12,7 +12,6 @@ const Sidebar = ({ user, open, setOpen }) => {
     { name: "Tagihan", path: "/tagihan" },
     { name: "User", path: "/user" },
     { name: "Pengajuan", path: "/pengajuan" },
-    { name: "Profile", path: "/profile" },
   ];
 
   const menuUser = [

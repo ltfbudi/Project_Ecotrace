@@ -38,6 +38,24 @@ app.get("/api", (req, res) => {
 
 // ADMIN QUERY
 
+app.post("/api/buat-tagihan-langsung", (req, res) => {
+  const { id_pel, bulan, tahun, pem_awal, pem_akhir, pemakaian, biaya } =
+    req.body;
+
+  const sql = `INSERT INTO transaksi (id_pel, bulan, tahun, pem_awal, pem_akhir, pemakaian, biaya, stat, stat_rev) VALUES (?,?,?,?,?,?,?,"lunas", "clear")`;
+
+  db.query(
+    sql,
+    [id_pel, bulan, tahun, pem_awal, pem_akhir, pemakaian, biaya],
+    (err) => {
+      if (err) {
+        return res.status(500).json({ succeed: false });
+      }
+      res.status(200).json({ succeed: true });
+    }
+  );
+});
+
 app.post("/api/add-tagihan-user", (req, res) => {
   const { invoice, id_pel, time, pem_awal, pem_akhir, biaya } = req.body;
 
@@ -331,7 +349,7 @@ app.get("/api/get-count-belum-bayar", (req, res) => {
 });
 
 app.get("/api/get-all-pending", (req, res) => {
-  const sql = `SELECT a.nama, b.id_pel, b.id, a.email, b.url, b.waktu FROM transaksi AS b JOIN users AS a ON b.id_pel = a.id_pel  WHERE stat = "diajukan"`;
+  const sql = `SELECT a.nama, b.id_pel, b.id, b.bulan, b.tahun, a.email, b.url, b.waktu FROM transaksi AS b JOIN users AS a ON b.id_pel = a.id_pel  WHERE stat = "diajukan" ORDER BY b.bulan, b.tahun`;
 
   db.query(sql, (err, result) => {
     const data = result.map((item) => {
@@ -428,7 +446,7 @@ app.post("/api/approve-pengajuan-user", (req, res) => {
 });
 
 app.get("/api/get-all-approve", (req, res) => {
-  const sql = `SELECT a.nama, b.id_pel, b.id, a.email, b.url, b.waktu FROM transaksi AS b JOIN users AS a ON b.id_pel = a.id_pel  WHERE stat = "pending" or stat="lunas" or stat="terbayar"`;
+  const sql = `SELECT a.nama, b.id_pel, b.id,b.bulan, b.tahun, a.email, b.url, b.waktu FROM transaksi AS b JOIN users AS a ON b.id_pel = a.id_pel  WHERE stat = "pending" or stat="lunas" or stat="terbayar" ORDER BY b.bulan, b.tahun`;
 
   db.query(sql, (err, result) => {
     const data = result.map((item) => {
@@ -448,7 +466,7 @@ app.get("/api/get-all-approve", (req, res) => {
 });
 
 app.get("/api/get-all-bayar-pending", (req, res) => {
-  const sql = `SELECT a.nama, b.id_pel, b.id, a.email, b.url, b.waktu FROM transaksi AS b JOIN users AS a ON b.id_pel = a.id_pel  WHERE stat = "pending"`;
+  const sql = `SELECT a.nama, b.id_pel, b.id,b.bulan, b.tahun, a.email, b.url, b.waktu FROM transaksi AS b JOIN users AS a ON b.id_pel = a.id_pel  WHERE stat = "pending" ORDER BY b.bulan, b.tahun`;
 
   db.query(sql, (err, result) => {
     const data = result.map((item) => {
@@ -468,7 +486,7 @@ app.get("/api/get-all-bayar-pending", (req, res) => {
 });
 
 app.get("/api/get-all-bayar-lunas", (req, res) => {
-  const sql = `SELECT a.nama, b.id_pel, b.id, a.email, b.url, b.waktu FROM transaksi AS b JOIN users AS a ON b.id_pel = a.id_pel  WHERE stat = "lunas"`;
+  const sql = `SELECT a.nama, b.id_pel, b.id,b.bulan, b.tahun, a.email, b.url, b.waktu FROM transaksi AS b JOIN users AS a ON b.id_pel = a.id_pel  WHERE stat = "lunas" ORDER BY b.bulan, b.tahun`;
 
   db.query(sql, (err, result) => {
     const data = result.map((item) => {
@@ -488,7 +506,7 @@ app.get("/api/get-all-bayar-lunas", (req, res) => {
 });
 
 app.get("/api/get-all-baru-bayar", (req, res) => {
-  const sql = `SELECT a.nama, b.id_pel, b.id, a.email, b.url, b.url_bukti,b.waktu FROM transaksi AS b JOIN users AS a ON b.id_pel = a.id_pel  WHERE stat = "terbayar"`;
+  const sql = `SELECT a.nama, b.id_pel, b.id, b.bulan, b.tahun, a.email,b.pem_akhir, b.url, b.url_bukti,b.waktu FROM transaksi AS b JOIN users AS a ON b.id_pel = a.id_pel  WHERE stat = "terbayar" ORDER BY b.bulan, b.tahun`;
 
   db.query(sql, (err, result) => {
     const data = result.map((item) => {
@@ -547,29 +565,23 @@ app.post("/api/registradi-dari-admin", async (req, res) => {
   }
 
   try {
-    const hashedPass = await bcrypt.hash(pass, 10);
-
     const sql = `INSERT INTO users (noHP, nama, pass, email, alamat, clasify, verif, id_pel) VALUES (?, ?, ?, ?, ?, ?, "yes", ?)`;
 
-    db.query(
-      sql,
-      [noHP, nama, hashedPass, email, alamat, clasify, id_pel],
-      (err) => {
-        if (err) {
-          if (err.code === "ER_DUP_ENTRY") {
-            return res
-              .status(400)
-              .json({ message: "Nomor HP Sudah terdaftar", succeed: false });
-          }
+    db.query(sql, [noHP, nama, pass, email, alamat, clasify, id_pel], (err) => {
+      if (err) {
+        if (err.code === "ER_DUP_ENTRY") {
           return res
-            .status(500)
-            .json({ message: "Terjadi kesalahan pada Server", succeed: false });
+            .status(400)
+            .json({ message: "Nomor HP Sudah terdaftar", succeed: false });
         }
-        res
-          .status(201)
-          .json({ message: "Registrasi berhasil dilakukan", succeed: true });
+        return res
+          .status(500)
+          .json({ message: "Terjadi kesalahan pada Server", succeed: false });
       }
-    );
+      res
+        .status(201)
+        .json({ message: "Registrasi berhasil dilakukan", succeed: true });
+    });
   } catch (err) {
     res
       .status(500)
@@ -730,26 +742,21 @@ app.post("/api/update-profile", async (req, res) => {
         succeed: false,
       });
     }
-    const isMatch = await bcrypt.compare(passPrev, passRealPrev);
+    const isMatch = passPrev === passRealPrev ? true : false;
     if (isMatch) {
-      const hashedPass = await bcrypt.hash(passNew, 10);
       const sql = `UPDATE users SET nama = ?, noHP = ?, pass = ?, alamat = ?, email = ? WHERE noHP = ?`;
-      db.query(
-        sql,
-        [nama, noHP, hashedPass, alamat, email, noHPprev],
-        (err) => {
-          if (err) {
-            return res.status(500).json({
-              message: "Terjadi kesalahan pada Server",
-              succeed: false,
-            });
-          }
-
-          res
-            .status(200)
-            .json({ message: "Berhasil update data", succeed: true });
+      db.query(sql, [nama, noHP, passNew, alamat, email, noHPprev], (err) => {
+        if (err) {
+          return res.status(500).json({
+            message: "Terjadi kesalahan pada Server",
+            succeed: false,
+          });
         }
-      );
+
+        res
+          .status(200)
+          .json({ message: "Berhasil update data", succeed: true });
+      });
     } else {
       return res.status(400).json({
         message: "Password Lama yang Anda masukkan tidak sama!",
@@ -841,7 +848,7 @@ app.get("/api/get-user-bayar-lunas", (req, res) => {
 app.get("/api/get-user-revisi", (req, res) => {
   const { id_pel } = req.query;
 
-  const sql = `SELECT * FROM transaksi WHERE id_pel = ? AND stat_rev="yes"`;
+  const sql = `SELECT a.nama, a.id_pel,b.id, b.pem_awal, b.pem_akhir, b.pemakaian, b.biaya, b.bulan, b.tahun,b.url, b.revisi FROM users AS a JOIN transaksi AS b ON a.id_pel = b.id_pel WHERE b.id_pel = ? AND b.stat_rev="yes"`;
 
   db.query(sql, [id_pel], (err, result) => {
     if (err) {
@@ -851,6 +858,21 @@ app.get("/api/get-user-revisi", (req, res) => {
     }
     const data = result;
     res.status(200).json({ succeed: true, data });
+  });
+});
+
+app.post("/api/update/revisi/user", (req, res) => {
+  const { id, bulan, tahun, total, pem_akhir, biaya } = req.body;
+
+  const sql = `UPDATE transaksi SET bulan=?, tahun=?, biaya=?, pem_akhir=?, pemakaian=? WHERE id=?`;
+
+  db.query(sql, [bulan, tahun, biaya, pem_akhir, total, id], (err) => {
+    if (err) {
+      return res
+        .status(500)
+        .json({ Message: "Gagal Terkoneksi!", succeed: false });
+    }
+    res.status(200).json({ succeed: true });
   });
 });
 
@@ -908,12 +930,10 @@ app.post("/api/register", async (req, res) => {
   }
 
   try {
-    const hashedPass = await bcrypt.hash(pass, 10);
-
     const sql =
       "INSERT INTO users (noHP, nama, pass, email, alamat) VALUES (?, ?, ?, ?, ?)";
 
-    db.query(sql, [noHP, nama, hashedPass, email, alamat], (err) => {
+    db.query(sql, [noHP, nama, pass, email, alamat], (err) => {
       if (err) {
         if (err.code === "ER_DUP_ENTRY") {
           return res
@@ -959,7 +979,7 @@ app.post("/api/login", async (req, res) => {
 
     const user = result[0];
 
-    const match = await bcrypt.compare(pass, user.pass);
+    const match = pass === user.pass ? true : false;
 
     if (!match) {
       return res
@@ -968,6 +988,19 @@ app.post("/api/login", async (req, res) => {
     }
 
     res.json({ message: `Selamat Datang ${user.nama}`, user, succeed: true });
+  });
+});
+
+app.get("/api/chart", (req, res) => {
+  const sql = `SELECT bulan, tahun, SUM(pemakaian) AS total_pemakaian FROM transaksi GROUP BY bulan, tahun ORDER BY tahun DESC, bulan DESC;`;
+
+  db.query(sql, (err, result) => {
+    if (err) {
+      return res.status(500).json({ succeed: false });
+    }
+
+    const data = result;
+    res.status(200).json({ succeed: true, data });
   });
 });
 

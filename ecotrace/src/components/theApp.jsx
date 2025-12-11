@@ -5,7 +5,7 @@ import DashAdm from "./assets/dash-admin";
 import NotFound from "./assets/notFound";
 import TagAdm from "./assets/tag-admin";
 import CompProfile from "./assets/comp-profile";
-import RiwAdmin from "./assets/riw-admin";
+import PengAdm from "./assets/peng-adm";
 import RiwUser from "./assets/riw-user";
 import CompPengajuan from "./assets/comp-pengajuan";
 import UserAdmin from "./assets/userAd";
@@ -112,8 +112,8 @@ const TheApp = ({ page, user }) => {
             <DashAdm user={user} />
           ) : page === "Tagihan" ? (
             <TagAdm user={user} create={create} setCreate={setCreate} />
-          ) : page === "Riwayat" ? (
-            <RiwAdmin />
+          ) : page === "Pengajuan" ? (
+            <PengAdm user={user} />
           ) : page === "User" ? (
             <UserAdmin create={create} setCreate={setCreate} />
           ) : (

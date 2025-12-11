@@ -1,13 +1,13 @@
 import { useState, useRef } from "react";
 
-const CreateTag = ({ setCreate, user, pemAwal }) => {
+const PageRev = ({ setPageRevisi, user, who }) => {
   const fileRef = useRef(null);
   const [preview, setPreview] = useState(null);
-  const [selectedBulan, setSelectedBulan] = useState("");
-  const [selectedTahun, setSelectedTahun] = useState("");
+  const [selectedBulan, setSelectedBulan] = useState(who.bulan);
+  const [selectedTahun, setSelectedTahun] = useState(who.tahun);
   const [file, setFile] = useState(null);
   const [form, setForm] = useState({
-    pem_akhir: "",
+    pem_akhir: who.pem_akhir,
   });
 
   const bulans = [
@@ -36,11 +36,7 @@ const CreateTag = ({ setCreate, user, pemAwal }) => {
     { label: "2029", value: "2029" },
   ];
 
-  const totalPemakaian = form.pem_akhir
-    ? form.pem_akhir > pemAwal.pemakaian
-      ? form.pem_akhir - pemAwal.pemakaian
-      : 0
-    : 0;
+  const totalPemakaian = form.pem_akhir - who.pem_awal;
   const harga = totalPemakaian * 10000 + 10000;
 
   const change = (e) => {
@@ -62,62 +58,30 @@ const CreateTag = ({ setCreate, user, pemAwal }) => {
     }
   };
 
-  const handleSubmitUser = async (e) => {
-    e.preventDefault();
-    if (!file) return alert("Pilih foto dulu!");
+  const handleSubmitUser = async () => {
+    const newForm = {
+      id: who.id,
+      bulan: selectedBulan,
+      tahun: selectedTahun,
+      total: totalPemakaian,
+      pem_akhir: form.pem_akhir,
+      biaya: harga,
+    };
 
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("upload_preset", "ecotrace_default");
-
-    const res = await fetch("/api/upload-bayar", {
+    const res = await fetch(`/api/update/revisi/user`, {
       method: "POST",
-      body: formData,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(newForm),
     });
+
     const temp = await res.json();
-
     if (temp.succeed) {
-      const newForm = {
-        ...form,
-        bulan: selectedBulan,
-        tahun: selectedTahun,
-        url: temp.url,
-        pem_awal: pemAwal.pemakaian,
-        total: totalPemakaian,
-        biaya: harga,
-        id_pel: user.id_pel,
-      };
-
-      const res = await fetch("/api/upload-pengajuan-user", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newForm),
-      });
-
-      const temp2 = await res.json();
-      if (temp2.succeed) {
-        alert(temp2.message);
-        window.location.reload();
-      } else {
-        alert(temp2.message);
-      }
+      alert("GG");
     } else {
-      alert(temp.message);
+      alert("Gagal");
     }
-  };
-
-  const handleChoose = () => {
-    fileRef.current.click();
-  };
-
-  const handleFileChange = (e) => {
-    const selected = e.target.files[0];
-    if (!selected) return;
-
-    setFile(selected);
-    setPreview(URL.createObjectURL(selected)); // preview lokal
   };
 
   return (
@@ -125,7 +89,7 @@ const CreateTag = ({ setCreate, user, pemAwal }) => {
       {user.role === "user" ? (
         <div className="max-h-[400px] overflow-y-auto bg-white w-11/12 sm:w-4/5 md:w-3/5 lg:w-2/5 px-6 py-5 rounded-xl shadow-lg text-sm">
           <div className="flex justify-end mb-2">
-            <button onClick={() => setCreate(false)}>
+            <button onClick={() => setPageRevisi(false)}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="22"
@@ -197,7 +161,7 @@ const CreateTag = ({ setCreate, user, pemAwal }) => {
                 <input
                   type="text"
                   name="pem_awal"
-                  value={pemAwal.pemakaian}
+                  value={who.pem_awal}
                   disabled
                   onChange={() => {}}
                   className="w-full border border-gray-400 rounded-full h-9 px-4"
@@ -237,6 +201,18 @@ const CreateTag = ({ setCreate, user, pemAwal }) => {
                 </h1>
               </div>
             </div>
+            <div>
+              <label>Revisi</label>
+              <input
+                type="text"
+                name="id_pel"
+                value={who.revisi}
+                disabled
+                onChange={() => {}}
+                className="w-full border border-gray-400 rounded-full h-9 px-4"
+                placeholder="ID Pelanggan"
+              />
+            </div>
 
             {preview ? (
               <div className="w-full flex justify-center">
@@ -252,31 +228,18 @@ const CreateTag = ({ setCreate, user, pemAwal }) => {
               <div className="w-full flex justify-center">
                 <div className="w-50 h-60 flex justify-center items-center align-middle ">
                   <img
-                    src={`https://tse1.mm.bing.net/th/id/OIP.ksezYmQQItwKOBx_9d2Q-AHaHa?cb=ucfimg2&ucfimg=1&rs=1&pid=ImgDetMain&o=7&rm=3`}
+                    src={who.url}
                     alt="preview"
                     className="w-full h-full align-middle"
                   />
                 </div>
               </div>
             )}
-            <input
-              type="file"
-              accept="image/*"
-              ref={fileRef}
-              style={{ display: "none" }}
-              onChange={handleFileChange}
-            />
-            <div className="flex w-full justify-center">
-              <h1
-                onClick={handleChoose}
-                className="font-bold mt-4 shadow-[0_0_6px_1px_rgba(0,0,0,0.2)] w-fit px-6 rounded-full py-1 text-navBase transform hover:-translate-x-0.5 hover:-translate-y-0.5 transition duration-300"
-              >
-                Pilih Foto
-              </h1>
-            </div>
             <div className="w-full flex justify-center">
               <button
-                onClick={() => {}}
+                onClick={() => {
+                  handleSubmitUser();
+                }}
                 type="submit"
                 className="bg-linear-to-br from-navBase to-nav mt-4 w-fit px-6 py-1 text-white font-bold rounded-full shadow-md hover:-translate-y-0.5 active:scale-95 transition"
               >
@@ -292,4 +255,4 @@ const CreateTag = ({ setCreate, user, pemAwal }) => {
   );
 };
 
-export default CreateTag;
+export default PageRev;

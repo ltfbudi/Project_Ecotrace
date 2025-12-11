@@ -1,78 +1,28 @@
 import { useEffect, useState } from "react";
-import Confirm from "../connection/confirm";
-import RegAdm from "../btn-assets/reg-adm";
 
-const UserAdmin = ({ create, setCreate }) => {
-  const [userNoVerif, setUserNoVerif] = useState([]);
-  const [userVerif, setUserVerif] = useState([]);
-  const [noHP, setNoHP] = useState("");
-  const [confirm, setConfirm] = useState(false);
-
-  // --- LOGIC API ---
-  const decline = async (noHP) => {
-    const res = await fetch(`/api/decline-acc/${noHP}`, { method: "DELETE" });
-    const temp = await res.json();
-    alert(temp.message);
-    window.location.reload();
-  };
-
-  const deleteAcc = async (id_pel) => {
-    const res = await fetch(`/api/delete-trans-acc/${id_pel}`, {
-      method: "DELETE",
-    });
-
-    const temp = await res.json();
-    if (temp.succeed) {
-      const res = await fetch(`/api/delete-acc/${id_pel}`, {
-        method: "DELETE",
-      });
-
-      const temp2 = await res.json();
-      alert(temp2.message);
-      window.location.reload();
-    }
-  };
-
-  const historyDelete = async (id_pel) => {
-    if (!id_pel) return alert("Gagal membuat tagihan");
-    const form = {
-      text: `Menghapus Akun dengan ID Pelanggan ${id_pel}`,
-      id_pel,
-    };
-    await fetch(`/api/his-acc-conf`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
-    });
-  };
-
-  const history = async (noHP) => {
-    const form = { text: `Konfirmasi Akun dengan Nomor Telepon ${noHP}` };
-    await fetch(`/api/his-confirm`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
-    });
-  };
+const PengAdm = ({ user }) => {
+  const [dataPending, setDataPending] = useState(null);
+  const [dataApprove, setDataApprove] = useState(null);
 
   useEffect(() => {
-    const Get = async () => {
-      const res = await fetch("/api/get-noVerif");
+    const GetDataPengajuanPending = async () => {
+      const res = await fetch("/api/get-all-pending");
       const temp = await res.json();
       if (temp.succeed) {
-        setUserNoVerif(temp.data);
-      }
-    };
-    const Get2 = async () => {
-      const res = await fetch("/api/get-Verif");
-      const temp = await res.json();
-      if (temp.succeed) {
-        setUserVerif(temp.data);
+        setDataPending(temp.data);
       }
     };
 
-    Get();
-    Get2();
+    const GetDataApprove = async () => {
+      const res = await fetch("/api/get-all-approve");
+      const temp = await res.json();
+      if (temp.succeed) {
+        setDataApprove(temp.data);
+      }
+    };
+
+    GetDataPengajuanPending();
+    GetDataApprove();
   }, []);
 
   // --- KOMPONEN TABEL CANGGIH (Pagination + Filter Limit) ---
@@ -102,11 +52,9 @@ const UserAdmin = ({ create, setCreate }) => {
 
     return (
       <div className="w-full mb-8">
-        <div className="flex flex-col md:flex-row justify-between items-center mb-3 gap-2">
-          <h1 className="text-md md:text-lg font-semibold text-gray-700">
-            {title}
-          </h1>
-        </div>
+        <h1 className="text-md md:text-lg font-semibold text-gray-700 mb-3">
+          {title}
+        </h1>
 
         <div className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden flex flex-col">
           {/* Header Kontrol (Filter Jumlah Data) */}
@@ -193,7 +141,6 @@ const UserAdmin = ({ create, setCreate }) => {
                 {/* Tombol Angka Halaman */}
                 {Array.from({ length: totalPages }, (_, i) => i + 1).map(
                   (number) => {
-                    // Logic agar tombol tidak terlalu banyak jika halaman ratusan
                     if (
                       totalPages > 5 &&
                       Math.abs(currentPage - number) > 1 &&
@@ -240,74 +187,14 @@ const UserAdmin = ({ create, setCreate }) => {
   // --- RENDER UTAMA ---
   return (
     <div className="w-full p-4 bg-gray-50 min-h-screen">
-      {confirm && <Confirm noHP={noHP} setConfirm={setConfirm} />}
-      {create && <RegAdm setCreate={setCreate} />}
-
       <div className="flex flex-col gap-6">
-        {/* TABEL 1: User Belum Diverifikasi */}
+        {/* TABEL 1: Pengajuan Pending */}
         <TableCard
-          title="Informasi User Belum Diverifikasi"
-          headers={["Nomor Telepon", "Nama", "Alamat", "Aksi"]}
-          data={userNoVerif} // Kirim data mentah
-          renderRow={(
-            item,
-            index // Definisikan cara merender per baris
-          ) => (
+          title="Informasi Pengajuan - Pending"
+          headers={["ID Pelanggan", "Nama", "Email", "Periode"]}
+          data={dataPending} // Kirim data mentah ke TableCard
+          renderRow={(item, index) => (
             <tr key={index} className="hover:bg-gray-50 transition-colors">
-              <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-100">
-                {item.noHP}
-              </td>
-              <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-100">
-                {item.nama}
-              </td>
-              <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-100 max-w-[200px] truncate">
-                {item.alamat}
-              </td>
-              <td className="px-4 py-3 text-sm border-gray-100 text-center">
-                <div className="flex justify-center items-center">
-                  <button
-                    onClick={() => {
-                      setNoHP(item.noHP);
-                      setConfirm(true);
-                    }}
-                    className="w-8 h-8 rounded-full bg-green-500 hover:bg-green-600 flex items-center justify-center text-white transition-all shadow-sm"
-                    title="Verifikasi Akun"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      fill="currentColor"
-                      viewBox="0 0 16 16"
-                    >
-                      <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z" />
-                    </svg>
-                  </button>
-                </div>
-              </td>
-            </tr>
-          )}
-        />
-
-        {/* TABEL 2: User Sudah Diverifikasi */}
-        <TableCard
-          title="Informasi User Sudah Diverifikasi"
-          headers={[
-            "Nomor Telepon",
-            "ID Pelanggan",
-            "Nama",
-            "Alamat",
-            "Klasifikasi",
-          ]}
-          data={userVerif} // Kirim data mentah
-          renderRow={(
-            item,
-            index // Definisikan cara merender per baris
-          ) => (
-            <tr key={index} className="hover:bg-gray-50 transition-colors">
-              <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-100">
-                {item.noHP}
-              </td>
               <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-100">
                 {item.id_pel}
               </td>
@@ -315,18 +202,33 @@ const UserAdmin = ({ create, setCreate }) => {
                 {item.nama}
               </td>
               <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-100 max-w-[200px] truncate">
-                {item.alamat}
+                {item.email}
               </td>
-              <td className="px-4 py-3 text-sm text-gray-600 font-medium">
-                {item.clasify === "KSM" ? (
-                  <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs">
-                    Anggota KSM
-                  </span>
-                ) : (
-                  <span className="bg-gray-100 text-gray-700 px-2 py-1 rounded-full text-xs">
-                    Rumah Tangga
-                  </span>
-                )}
+              <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-100 whitespace-nowrap">
+                {item.tanggal_format}
+              </td>
+            </tr>
+          )}
+        />
+
+        {/* TABEL 2: Pengajuan Disetujui */}
+        <TableCard
+          title="Informasi Pengajuan - Disetujui"
+          headers={["ID Pelanggan", "Nama", "Email", "Periode"]}
+          data={dataApprove} // Kirim data mentah ke TableCard
+          renderRow={(item, index) => (
+            <tr key={index} className="hover:bg-gray-50 transition-colors">
+              <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-100">
+                {item.id_pel}
+              </td>
+              <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-100">
+                {item.nama}
+              </td>
+              <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-100 max-w-[200px] truncate">
+                {item.email}
+              </td>
+              <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-100 whitespace-nowrap">
+                {item.tanggal_format}
               </td>
             </tr>
           )}
@@ -336,4 +238,4 @@ const UserAdmin = ({ create, setCreate }) => {
   );
 };
 
-export default UserAdmin;
+export default PengAdm;

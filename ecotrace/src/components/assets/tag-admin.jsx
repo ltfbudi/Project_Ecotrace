@@ -1,9 +1,10 @@
-import CreateTag from "../btn-assets/tag-create";
+import TagihanLangsung from "../btn-assets/tagigan-langsung";
 import TagUser from "../connection/tag-user";
 import { useEffect, useState } from "react";
 
 const TagAdm = ({ user, create, setCreate }) => {
   const [data, setData] = useState([]);
+  const [dataAll, setDataAll] = useState([]);
 
   useEffect(() => {
     const Get = async () => {
@@ -14,11 +15,20 @@ const TagAdm = ({ user, create, setCreate }) => {
         setData(temp.data);
       }
     };
+    const Get2 = async () => {
+      const res = await fetch(`/api/get-user-all`);
+      const temp = await res.json();
+
+      if (temp.succeed) {
+        setDataAll(temp.data);
+      }
+    };
     Get();
+    Get2();
   }, []);
   return (
     <div className="w-full flex justify-center px-2 sm:px-4">
-      {create && <CreateTag setCreate={setCreate} user={user} />}
+      {create && <TagihanLangsung setCreate={setCreate} data={dataAll} />}
       <TagUser data={data} />
     </div>
   );
