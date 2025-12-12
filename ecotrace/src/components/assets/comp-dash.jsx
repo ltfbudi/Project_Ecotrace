@@ -12,6 +12,7 @@ import {
   Filler,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
+import CompStruk from "../btn-assets/comp-struk";
 
 // Registrasi komponen Chart.js
 ChartJS.register(
@@ -28,6 +29,18 @@ ChartJS.register(
 const CompDash = ({ user }) => {
   const [data, setData] = useState([]);
   const [revisi, setRevisi] = useState([]);
+  const [struk, setStruk] = useState(false);
+  const [dataStruk, setDataStruk] = useState({
+    id_pel: "",
+    nama: "",
+    alamat: "",
+    pem_awal: "",
+    pem_akhir: "",
+    pemakaian: "",
+    bulan: "",
+    tahun: "",
+    biaya: "",
+  });
 
   // State untuk Grafik Pemakaian
   const [chartData, setChartData] = useState({
@@ -228,6 +241,7 @@ const CompDash = ({ user }) => {
     <div className="w-full p-4 bg-gray-50 min-h-screen">
       {user.verif === "yes" ? (
         <div className="flex flex-col gap-6">
+          {struk && <CompStruk data={dataStruk} setStruk={setStruk} />}
           {/* BAGIAN 1: TABEL-TABEL (Posisi Atas) */}
 
           {/* TABEL 1: History Pemakaian */}
@@ -239,6 +253,7 @@ const CompDash = ({ user }) => {
               "Pemakaian Akhir",
               "Total Pemakaian",
               "Biaya",
+              "Aksi",
             ]}
             isEmpty={!Array.isArray(data) || data.length === 0}
           >
@@ -259,6 +274,39 @@ const CompDash = ({ user }) => {
                   </td>
                   <td className="px-4 py-3 text-sm font-medium text-teal-600">
                     {`Rp ${Number(item.biaya).toLocaleString("id-ID")}`}
+                  </td>
+                  <td className="px-4 py-3 text-sm border-gray-100 text-center">
+                    <div className="flex justify-center items-center">
+                      <button
+                        onClick={() => {
+                          setDataStruk({
+                            id_pel: item.id_pel,
+                            nama: item.nama,
+                            alamat: item.alamat,
+                            pem_awal: item.pem_awal,
+                            pem_akhir: item.pem_akhir,
+                            pemakaian: item.pemakaian,
+                            bulan: item.bulan,
+                            tahun: item.tahun,
+                            biaya: item.biaya,
+                          });
+                          setStruk(true);
+                        }}
+                        className="w-8 h-8 rounded-full bg-teal-500 hover:bg-teal-600 flex items-center justify-center text-white transition-all shadow-sm"
+                        title="Lihat Detail"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          fill="currentColor"
+                          viewBox="0 0 16 16"
+                        >
+                          <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0" />
+                          <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7" />
+                        </svg>
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}

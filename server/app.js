@@ -349,7 +349,7 @@ app.get("/api/get-count-belum-bayar", (req, res) => {
 });
 
 app.get("/api/get-all-pending", (req, res) => {
-  const sql = `SELECT a.nama, b.id_pel, b.id, b.bulan, b.tahun, a.email, b.url, b.waktu FROM transaksi AS b JOIN users AS a ON b.id_pel = a.id_pel  WHERE stat = "diajukan" ORDER BY b.bulan, b.tahun`;
+  const sql = `SELECT a.nama, b.id_pel, a.alamat,b.id, b.bulan, b.tahun, a.email, b.url, b.waktu FROM transaksi AS b JOIN users AS a ON b.id_pel = a.id_pel  WHERE stat = "diajukan" ORDER BY b.bulan, b.tahun`;
 
   db.query(sql, (err, result) => {
     const data = result.map((item) => {
@@ -446,7 +446,7 @@ app.post("/api/approve-pengajuan-user", (req, res) => {
 });
 
 app.get("/api/get-all-approve", (req, res) => {
-  const sql = `SELECT a.nama, b.id_pel, b.id,b.bulan, b.tahun, a.email, b.url, b.waktu FROM transaksi AS b JOIN users AS a ON b.id_pel = a.id_pel  WHERE stat = "pending" or stat="lunas" or stat="terbayar" ORDER BY b.bulan, b.tahun`;
+  const sql = `SELECT a.nama, b.id_pel, a.alamat,b.id,b.bulan, b.tahun, a.email, b.url, b.waktu FROM transaksi AS b JOIN users AS a ON b.id_pel = a.id_pel  WHERE stat = "pending" or stat="lunas" or stat="terbayar" ORDER BY b.bulan, b.tahun`;
 
   db.query(sql, (err, result) => {
     const data = result.map((item) => {
@@ -466,7 +466,7 @@ app.get("/api/get-all-approve", (req, res) => {
 });
 
 app.get("/api/get-all-bayar-pending", (req, res) => {
-  const sql = `SELECT a.nama, b.id_pel, b.id,b.bulan, b.tahun, a.email, b.url, b.waktu FROM transaksi AS b JOIN users AS a ON b.id_pel = a.id_pel  WHERE stat = "pending" ORDER BY b.bulan, b.tahun`;
+  const sql = `SELECT a.nama, b.id_pel, a.alamat,b.id,b.bulan, b.tahun, a.email, b.url, b.waktu FROM transaksi AS b JOIN users AS a ON b.id_pel = a.id_pel  WHERE stat = "pending" ORDER BY b.bulan, b.tahun`;
 
   db.query(sql, (err, result) => {
     const data = result.map((item) => {
@@ -486,7 +486,7 @@ app.get("/api/get-all-bayar-pending", (req, res) => {
 });
 
 app.get("/api/get-all-bayar-lunas", (req, res) => {
-  const sql = `SELECT a.nama, b.id_pel, b.id,b.bulan, b.tahun, a.email, b.url, b.waktu FROM transaksi AS b JOIN users AS a ON b.id_pel = a.id_pel  WHERE stat = "lunas" ORDER BY b.bulan, b.tahun`;
+  const sql = `SELECT a.nama, b.id_pel, a.alamat, b.pemakaian, b.pem_awal, b.pem_akhir, b.biaya, b.id,b.bulan, b.tahun, a.email, b.url, b.waktu FROM transaksi AS b JOIN users AS a ON b.id_pel = a.id_pel  WHERE stat = "lunas" ORDER BY b.bulan, b.tahun`;
 
   db.query(sql, (err, result) => {
     const data = result.map((item) => {
@@ -506,7 +506,7 @@ app.get("/api/get-all-bayar-lunas", (req, res) => {
 });
 
 app.get("/api/get-all-baru-bayar", (req, res) => {
-  const sql = `SELECT a.nama, b.id_pel, b.id, b.bulan, b.tahun, a.email,b.pem_akhir, b.url, b.url_bukti,b.waktu FROM transaksi AS b JOIN users AS a ON b.id_pel = a.id_pel  WHERE stat = "terbayar" ORDER BY b.bulan, b.tahun`;
+  const sql = `SELECT a.nama, b.id_pel, a.alamat,b.id, b.bulan, b.tahun, a.email,b.pem_akhir, b.url, b.url_bukti,b.waktu FROM transaksi AS b JOIN users AS a ON b.id_pel = a.id_pel  WHERE stat = "terbayar" ORDER BY b.bulan, b.tahun`;
 
   db.query(sql, (err, result) => {
     const data = result.map((item) => {
@@ -832,7 +832,7 @@ app.post("/api/upload-pengajuan-user", (req, res) => {
 app.get("/api/get-user-bayar-lunas", (req, res) => {
   const { id_pel } = req.query;
 
-  const sql = `SELECT * FROM transaksi WHERE id_pel = ? AND stat="lunas"`;
+  const sql = `SELECT * FROM users JOIN transaksi ON users.id_pel = transaksi.id_pel WHERE transaksi.id_pel = ? AND transaksi.stat="lunas"`;
 
   db.query(sql, [id_pel], (err, result) => {
     if (err) {

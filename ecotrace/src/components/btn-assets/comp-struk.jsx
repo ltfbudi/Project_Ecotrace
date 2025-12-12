@@ -6,17 +6,21 @@ const CompStruk = ({ data, setStruk }) => {
   const pdfRef = useRef();
 
   const downloadPDF = async () => {
-    const canvas = await html2canvas(pdfRef.current, {
+    const element = pdfRef.current;
+    const canvas = await html2canvas(element, {
       scale: 3,
-      useCORS: true,
+      useCORS: true, // Setting window scroll to 0,0 before capture
+      windowWidth: element.scrollWidth,
+      windowHeight: element.scrollHeight,
     });
 
-    const imgData = canvas.toDataURL("image/png");
+    const imgData = canvas.toDataURL("image/png"); // P = portrait, mm = milimeter, a4 = ukuran kertas
+
     const pdf = new jsPDF("p", "mm", "a4");
 
-    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageWidth = pdf.internal.pageSize.getWidth(); // Lebar A4 dalam mm (~210mm) // Konversi lebar dan tinggi canvas dari piksel ke milimeter (mm) // Rasio konversi: 1 piksel / 96 dpi = 0.264583 mm (approx) // Namun, lebih mudah menggunakan rasio aspek terhadap lebar halaman.
     const imgWidth = pageWidth;
-    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+    const imgHeight = (canvas.height * imgWidth) / canvas.width; // Tinggi dalam mm, menjaga rasio aspek. // Pastikan imgData dimasukkan, jika terpotong, coba cara lain (Solusi 2).
 
     pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight);
     pdf.save(`Struk-${data.id_pel}.pdf`);
@@ -91,7 +95,7 @@ const CompStruk = ({ data, setStruk }) => {
                 <tr>
                   <td>Periode</td>
                   <td>:</td>
-                  <td>{data.bulan}</td>
+                  <td>{data.bulan + " " + data.tahun}</td>
                 </tr>
                 <tr>
                   <td>Tagihan Air</td>
@@ -100,6 +104,8 @@ const CompStruk = ({ data, setStruk }) => {
                 </tr>
               </tbody>
             </table>
+            <br />
+            <br />
           </div>
         </div>
 

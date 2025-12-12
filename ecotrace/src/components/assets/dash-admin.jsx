@@ -16,6 +16,7 @@ import { Line } from "react-chartjs-2";
 import TagUser from "../connection/tag-user";
 import CreateTagAdm from "../btn-assets/tag-create-adm";
 import Bukti from "../btn-assets/bukti-pend";
+import CompStruk from "../btn-assets/comp-struk";
 
 // 2. Registrasi komponen Chart.js
 ChartJS.register(
@@ -37,6 +38,18 @@ const DashAdm = ({ user }) => {
   const [dataBlmBayar, setDataBlmBayar] = useState(null);
   const [dataBaruBayar, setDataBaruBayar] = useState(null);
   const [dataSdhBayar, setDataSdhBayar] = useState(null);
+  const [struk, setStruk] = useState(false);
+  const [data, setData] = useState({
+    id_pel: "",
+    nama: "",
+    alamat: "",
+    pem_awal: "",
+    pem_akhir: "",
+    pemakaian: "",
+    bulan: "",
+    tahun: "",
+    biaya: "",
+  });
 
   // State UI
   const [create, setCreate] = useState(false);
@@ -201,7 +214,7 @@ const DashAdm = ({ user }) => {
             <table className="w-full border-collapse min-w-full">
               <thead className="bg-white border-b border-gray-200">
                 <tr>
-                  {["ID Pelanggan", "Nama", "Email", "Periode", "Aksi"].map(
+                  {["ID Pelanggan", "Nama", "Alamat", "Periode", "Aksi"].map(
                     (header) => (
                       <th
                         key={header}
@@ -227,7 +240,7 @@ const DashAdm = ({ user }) => {
                         {item.nama}
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-100 max-w-[150px] truncate">
-                        {item.email}
+                        {item.alamat}
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-100 whitespace-nowrap">
                         {item.bulan + " " + item.tahun}
@@ -244,6 +257,19 @@ const DashAdm = ({ user }) => {
                                   pem_awal: item.pem_akhir,
                                 });
                                 setBukti(true);
+                              } else if (type === "struk") {
+                                setData({
+                                  id_pel: item.id_pel,
+                                  nama: item.nama,
+                                  alamat: item.alamat,
+                                  pem_awal: item.pem_awal,
+                                  pem_akhir: item.pem_akhir,
+                                  pemakaian: item.pemakaian,
+                                  bulan: item.bulan,
+                                  tahun: item.tahun,
+                                  biaya: item.biaya,
+                                });
+                                setStruk(true);
                               } else {
                                 getPemAkhir(item.id);
                                 setCreate(true);
@@ -357,6 +383,7 @@ const DashAdm = ({ user }) => {
     <div className="w-full bg-gray-50 min-h-screen p-4">
       {create && <CreateTagAdm setCreate={setCreate} user={user} who={who} />}
       {bukti && <Bukti setBukti={setBukti} data={url} />}
+      {struk && <CompStruk data={data} setStruk={setStruk} />}
 
       {/* --- BAGIAN 1: GRAFIK TOTAL PEMAKAIAN (BARU) --- */}
       <div className="w-full mb-8">
@@ -438,7 +465,7 @@ const DashAdm = ({ user }) => {
           <TableComponent
             title="Informasi Pembayar - Lunas"
             data={dataSdhBayar}
-            type="default"
+            type="struk"
           />
         </div>
       </div>
