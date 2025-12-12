@@ -108,8 +108,7 @@ const Pay = ({ setPay, data }) => {
         <p>{`Pemakaian: ${data.pemakaian} m³`}</p>
         <p>{`Biaya:  Rp  ` + Number(data.biaya).toLocaleString("id-ID")}</p>
         <p>Pemabayaran dapat dilakukan dengan transfer ke: </p>
-        <p>082111164670 DANA a/n Naufal Adli</p>
-        <p>059501040133507 BRI a/n Naufal Adli</p>
+        <p>4731971719 BCA a/n Eneng Siti Nurhayati</p>
         {preview ? (
           <div className="w-full flex justify-center">
             <div className="w-50 h-60 flex justify-center items-center align-middle ">
