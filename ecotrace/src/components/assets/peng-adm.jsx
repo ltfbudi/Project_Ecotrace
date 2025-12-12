@@ -228,7 +228,7 @@ const PengAdm = ({ user }) => {
                 {item.email}
               </td>
               <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-100 whitespace-nowrap">
-                {item.tanggal_format}
+                {item.bulan + " " + item.tahun}
               </td>
             </tr>
           )}
