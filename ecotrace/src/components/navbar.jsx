@@ -60,7 +60,7 @@ const Sidebar = ({ user, open, setOpen }) => {
 
             {/* Mobile Toggle Button */}
             <button
-              className="fixed top-5 left-5 z-50 bg-white p-2 rounded-xl shadow-md md:hidden"
+              className="fixed top-5 left-5 z-50 bg-white p-2 rounded-xl shadow-md"
               onClick={() => setOpen(!open)}
             >
               <svg
