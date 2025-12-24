@@ -1,10 +1,8 @@
 const express = require("express");
 const mysql = require("mysql2");
-const bcrypt = require("bcrypt");
 const val = require("validator");
 const multer = require("multer");
 const { createClient } = require("@supabase/supabase-js");
-const e = require("express");
 
 const upload = multer();
 const app = express();
@@ -15,11 +13,18 @@ const supabase = createClient(
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp5cHlrYnRmcmJ4cHZ6aWllcXBvIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MzcxNTEwMSwiZXhwIjoyMDc5MjkxMTAxfQ.rng7SOegoGWyKoQ186nrZ7KNxZFUe5-3j5U1E086r3o"
 );
 
+const cors = require("cors");
+
+const corsOptions = {
+  origin: ["https://ecotrace.id", "https://www.ecotrace.id"],
+  methods: "GET,POST,PUT,DELETE",
+};
+
 const db = mysql.createConnection({
-  host: "127.0.0.1",
-  user: "root",
-  password: "",
-  database: "ecotrace",
+  host: "103.163.138.168",
+  user: "ecotrace_dataset",
+  password: "Ec0tr4c3@131225",
+  database: "ecotrace_ecotrace",
 });
 
 db.connect((err) => {
@@ -31,8 +36,9 @@ db.connect((err) => {
 });
 
 app.use(express.json());
+app.use(cors(corsOptions));
 
-app.get("/api", (req, res) => {
+app.get("/", (req, res) => {
   res.json({ message: "Terhubung ke Express.JS" });
 });
 
@@ -848,7 +854,7 @@ app.get("/api/get-user-bayar-lunas", (req, res) => {
 app.get("/api/get-user-revisi", (req, res) => {
   const { id_pel } = req.query;
 
-  const sql = `SELECT a.nama, a.id_pel,b.id, b.pem_awal, b.pem_akhir, b.pemakaian, b.biaya, b.bulan, b.tahun,b.url, b.revisi FROM users AS a JOIN transaksi AS b ON a.id_pel = b.id_pel WHERE b.id_pel = ? AND b.stat_rev="yes"`;
+  const sql = `SELECT a.nama, a.id_pel,b.id, b.pem_awal, b.pem_akhir, b.pemakaian, b.biaya, b.bulan, b.tahun, b.stat_rev, b.url, b.revisi FROM users AS a JOIN transaksi AS b ON a.id_pel = b.id_pel WHERE b.id_pel = ? `;
 
   db.query(sql, [id_pel], (err, result) => {
     if (err) {

@@ -32,7 +32,7 @@ ChartJS.register(
 
 const DashAdm = ({ user }) => {
   // State Data Mentah dari API
-  const [chart, setChart] = useState([]); // Ubah inisial ke array kosong agar lebih aman
+  const [chart, setChart] = useState([]);
   const [dataPending, setDataPending] = useState(null);
   const [dataApprove, setDataApprove] = useState(null);
   const [dataBlmBayar, setDataBlmBayar] = useState(null);
@@ -76,7 +76,9 @@ const DashAdm = ({ user }) => {
 
   // --- API CALLS ---
   const getPemAkhir = async (id) => {
-    const res = await fetch(`/api/pengajuan-user-by-id?id=${id}`);
+    const res = await fetch(
+      `https://api.ecotrace.id/api/pengajuan-user-by-id?id=${id}`
+    );
     const temp = await res.json();
     if (temp.succeed) {
       setWho(temp.data[0]);
@@ -96,32 +98,56 @@ const DashAdm = ({ user }) => {
       if (temp.succeed) setter(temp.data);
     };
 
-    fetchCount("/api/get-count-pending", setJmlPending);
-    fetchCount("/api/get-count-approve", setJmlApprove);
-    fetchCount("/api/get-count-sudah-bayar", setJmlSdhBayar);
-    fetchCount("/api/get-count-belum-bayar", setJmlBlmBayar);
+    fetchCount("https://api.ecotrace.id/api/get-count-pending", setJmlPending);
+    fetchCount("https://api.ecotrace.id/api/get-count-approve", setJmlApprove);
+    fetchCount(
+      "https://api.ecotrace.id/api/get-count-sudah-bayar",
+      setJmlSdhBayar
+    );
+    fetchCount(
+      "https://api.ecotrace.id/api/get-count-belum-bayar",
+      setJmlBlmBayar
+    );
 
-    fetchData("/api/get-all-pending", setDataPending);
-    fetchData("/api/get-all-approve", setDataApprove);
-    fetchData("/api/get-all-bayar-pending", setDataBlmBayar);
-    fetchData("/api/get-all-bayar-lunas", setDataSdhBayar);
-    fetchData("/api/get-all-baru-bayar", setDataBaruBayar);
+    fetchData("https://api.ecotrace.id/api/get-all-pending", setDataPending);
+    fetchData("https://api.ecotrace.id/api/get-all-approve", setDataApprove);
+    fetchData(
+      "https://api.ecotrace.id/api/get-all-bayar-pending",
+      setDataBlmBayar
+    );
+    fetchData(
+      "https://api.ecotrace.id/api/get-all-bayar-lunas",
+      setDataSdhBayar
+    );
+    fetchData(
+      "https://api.ecotrace.id/api/get-all-baru-bayar",
+      setDataBaruBayar
+    );
 
     // Ambil data untuk Chart
-    fetchData("/api/chart", setChart);
+    fetchData("https://api.ecotrace.id/api/chart", setChart);
   }, []);
 
   // --- USE EFFECT KHUSUS UNTUK OLAH DATA CHART ---
   useEffect(() => {
     // Pastikan data chart ada dan berbentuk array
     if (Array.isArray(chart) && chart.length > 0) {
-      // 1. Ambil 12 bulan terakhir (Data API biasanya urut terbaru ke terlama)
-      const latestData = chart.slice(0, 12);
+      // 1. FILTER DATA: Hapus data yang total pemakaiannya 0, null, atau tidak valid
+      const validChartData = chart.filter((item) => {
+        const total = Number(item.total_pemakaian);
+        // Pastikan total ada, angka valid, dan lebih dari 0
+        // Pastikan juga bulan dan tahun ada agar label tidak null
+        return !isNaN(total) && total > 0 && item.bulan && item.tahun;
+      });
 
-      // 2. Balik urutan agar tampil dari Kiri (Lama) ke Kanan (Baru)
+      // 2. Ambil 12 bulan TERBARU dari data yang SUDAH DIFILTER
+      // (Asumsi data dari API urut dari terbaru ke terlama)
+      const latestData = validChartData.slice(0, 12);
+
+      // 3. Balik urutan agar tampil di grafik dari Kiri (Lama) ke Kanan (Baru)
       const reversedData = latestData.reverse();
 
-      // 3. Mapping Label (Bulan/Tahun) dan Data (Total Pemakaian)
+      // 4. Mapping Label (Bulan/Tahun) dan Data (Total Pemakaian)
       const labels = reversedData.map((item) => `${item.bulan}/${item.tahun}`);
       const values = reversedData.map((item) => Number(item.total_pemakaian));
 
@@ -178,7 +204,7 @@ const DashAdm = ({ user }) => {
       y: {
         grid: { color: "#f3f4f6", borderDash: [5, 5] },
         ticks: { color: "#9ca3af", font: { size: 11 } },
-        beginAtZero: true,
+        beginAtZero: true, // Pastikan grafik mulai dari 0 secara visual
       },
     },
   };

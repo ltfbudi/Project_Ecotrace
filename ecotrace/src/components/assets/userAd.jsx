@@ -10,22 +10,30 @@ const UserAdmin = ({ create, setCreate }) => {
 
   // --- LOGIC API ---
   const decline = async (noHP) => {
-    const res = await fetch(`/api/decline-acc/${noHP}`, { method: "DELETE" });
+    const res = await fetch(`https://api.ecotrace.id/api/decline-acc/${noHP}`, {
+      method: "DELETE",
+    });
     const temp = await res.json();
     alert(temp.message);
     window.location.reload();
   };
 
   const deleteAcc = async (id_pel) => {
-    const res = await fetch(`/api/delete-trans-acc/${id_pel}`, {
-      method: "DELETE",
-    });
+    const res = await fetch(
+      `https://api.ecotrace.id/api/delete-trans-acc/${id_pel}`,
+      {
+        method: "DELETE",
+      }
+    );
 
     const temp = await res.json();
     if (temp.succeed) {
-      const res = await fetch(`/api/delete-acc/${id_pel}`, {
-        method: "DELETE",
-      });
+      const res = await fetch(
+        `https://api.ecotrace.id/api/delete-acc/${id_pel}`,
+        {
+          method: "DELETE",
+        }
+      );
 
       const temp2 = await res.json();
       alert(temp2.message);
@@ -39,7 +47,7 @@ const UserAdmin = ({ create, setCreate }) => {
       text: `Menghapus Akun dengan ID Pelanggan ${id_pel}`,
       id_pel,
     };
-    await fetch(`/api/his-acc-conf`, {
+    await fetch(`https://api.ecotrace.id/api/his-acc-conf`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(form),
@@ -48,7 +56,7 @@ const UserAdmin = ({ create, setCreate }) => {
 
   const history = async (noHP) => {
     const form = { text: `Konfirmasi Akun dengan Nomor Telepon ${noHP}` };
-    await fetch(`/api/his-confirm`, {
+    await fetch(`https://api.ecotrace.id/api/his-confirm`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(form),
@@ -57,14 +65,14 @@ const UserAdmin = ({ create, setCreate }) => {
 
   useEffect(() => {
     const Get = async () => {
-      const res = await fetch("/api/get-noVerif");
+      const res = await fetch("https://api.ecotrace.id/api/get-noVerif");
       const temp = await res.json();
       if (temp.succeed) {
         setUserNoVerif(temp.data);
       }
     };
     const Get2 = async () => {
-      const res = await fetch("/api/get-Verif");
+      const res = await fetch("https://api.ecotrace.id/api/get-Verif");
       const temp = await res.json();
       if (temp.succeed) {
         setUserVerif(temp.data);

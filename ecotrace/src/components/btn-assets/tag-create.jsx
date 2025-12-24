@@ -70,7 +70,7 @@ const CreateTag = ({ setCreate, user, pemAwal }) => {
     formData.append("file", file);
     formData.append("upload_preset", "ecotrace_default");
 
-    const res = await fetch("/api/upload-bayar", {
+    const res = await fetch("https://api.ecotrace.id/api/upload-bayar", {
       method: "POST",
       body: formData,
     });
@@ -88,13 +88,16 @@ const CreateTag = ({ setCreate, user, pemAwal }) => {
         id_pel: user.id_pel,
       };
 
-      const res = await fetch("/api/upload-pengajuan-user", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newForm),
-      });
+      const res = await fetch(
+        "https://api.ecotrace.id/api/upload-pengajuan-user",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(newForm),
+        }
+      );
 
       const temp2 = await res.json();
       if (temp2.succeed) {

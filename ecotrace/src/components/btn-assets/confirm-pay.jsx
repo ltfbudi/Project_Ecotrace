@@ -1,8 +1,11 @@
 const ConfirmPay = ({ setBukti, data }) => {
   const approve = async (invo) => {
-    const res = await fetch(`/api/confirm-pay?invoice=${invo}`, {
-      method: "POST",
-    });
+    const res = await fetch(
+      `https://api.ecotrace.id/api/confirm-pay?invoice=${invo}`,
+      {
+        method: "POST",
+      }
+    );
 
     const temp = await res.json();
     if (temp.succeed) {
@@ -21,7 +24,7 @@ const ConfirmPay = ({ setBukti, data }) => {
       text: `Admin Menyetujui Bukti Pembayaran untuk ID Pelanggan: ${id_pel}`,
       id_pel: id_pel,
     };
-    const res = await fetch(`/api/his-acc-conf`, {
+    const res = await fetch(`https://api.ecotrace.id/api/his-acc-conf`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

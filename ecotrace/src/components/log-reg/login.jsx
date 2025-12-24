@@ -6,9 +6,33 @@ const Login = ({ con, name, setName, setUser }) => {
   return (
     <div className="flex items-center bg-white rounded-2xl lg:rounded-b-none lg:rounded-tl-4xl lg:rounded-tr-none px-8 py-6 w-full lg:min-h-screen h-3/6">
       <div className="flex flex-col gap-5 w-full">
-        <h1 className=" lg:pl-6 font-mukta text-2xl md:text-3xl lg:text-4xl text-center lg:text-start font-bold text-navBase mb-0 lg:mb-4">
+        {/* --- BAGIAN LOGO (DIPERBAIKI) --- */}
+        <div className="flex items-center justify-center lg:justify-start gap-3 lg:pl-6 mb-2">
+          {/* Logo ITPLN */}
+          {/* Masalah: Class h-16 hilang saat deploy. */}
+          {/* Solusi: Tambahkan style={{ height: '4rem' }} agar ukuran terkunci paksa. */}
+          <img
+            src="/logoitpln.png"
+            alt="Logo ITPLN"
+            className="h-16 w-auto object-contain"
+            style={{ height: "4rem", width: "auto" }}
+          />
+
+          {/* Logo KSM */}
+          {/* Tambahkan style juga untuk jaga-jaga */}
+          <img
+            src="/logoksm.png"
+            alt="Logo KSM"
+            className="h-24 w-auto object-contain"
+            style={{ height: "6rem", width: "auto" }}
+          />
+        </div>
+
+        {/* Judul (Masuk / Daftar) */}
+        <h1 className="lg:pl-6 font-mukta text-2xl md:text-3xl lg:text-4xl text-center lg:text-start font-bold text-navBase mb-0 lg:mb-4">
           {name}
         </h1>
+
         <form onSubmit={handleSubmit} className="flex flex-col gap-5">
           <input
             type="text"

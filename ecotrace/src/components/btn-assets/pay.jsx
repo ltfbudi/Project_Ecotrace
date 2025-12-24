@@ -23,7 +23,7 @@ const Pay = ({ setPay, data }) => {
     formData.append("file", file);
     formData.append("upload_preset", "ecotrace_default");
 
-    const res = await fetch("/api/upload-bayar", {
+    const res = await fetch("https://api.ecotrace.id/api/upload-bayar", {
       method: "POST",
       body: formData,
     });
@@ -36,13 +36,16 @@ const Pay = ({ setPay, data }) => {
         id: data.id,
       };
 
-      const res = await fetch("/api/update-status-tagihan", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(form),
-      });
+      const res = await fetch(
+        "https://api.ecotrace.id/api/update-status-tagihan",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(form),
+        }
+      );
 
       const temp2 = await res.json();
       if (temp2.succeed) {
@@ -64,7 +67,7 @@ const Pay = ({ setPay, data }) => {
       text: `Menyerahkan Bukti Transaksi untuk ID Pelanggan: ${id_pel}`,
       id_pel: id_pel,
     };
-    const res = await fetch(`/api/his-acc-conf`, {
+    const res = await fetch(`https://api.ecotrace.id/api/his-acc-conf`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

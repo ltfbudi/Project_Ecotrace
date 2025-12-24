@@ -33,7 +33,7 @@ const Confirm = ({ noHP, setConfirm }) => {
     };
 
     try {
-      const res = await fetch("/api/confirm-acc", {
+      const res = await fetch("https://api.ecotrace.id/api/confirm-acc", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -43,13 +43,16 @@ const Confirm = ({ noHP, setConfirm }) => {
 
       const data = await res.json();
       if (data.succeed) {
-        const res2 = await fetch("/api/tambah-pemakaian-akhir", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ id_pel: form.id_pel }),
-        });
+        const res2 = await fetch(
+          "https://api.ecotrace.id/api/tambah-pemakaian-akhir",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ id_pel: form.id_pel }),
+          }
+        );
 
         const temp2 = await res2.json();
         if (temp2.succeed) {

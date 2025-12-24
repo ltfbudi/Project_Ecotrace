@@ -33,24 +33,30 @@ const RegAdm = ({ setCreate }) => {
       clasify: selectedValue,
     };
 
-    const res = await fetch("/api/registradi-dari-admin", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(newForm),
-    });
-
-    const temp = await res.json();
-
-    if (temp.succeed) {
-      const res2 = await fetch("/api/tambah-pemakaian-akhir", {
+    const res = await fetch(
+      "https://api.ecotrace.id/api/registradi-dari-admin",
+      {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ id_pel: newForm.id_pel }),
-      });
+        body: JSON.stringify(newForm),
+      }
+    );
+
+    const temp = await res.json();
+
+    if (temp.succeed) {
+      const res2 = await fetch(
+        "https://api.ecotrace.id/api/tambah-pemakaian-akhir",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ id_pel: newForm.id_pel }),
+        }
+      );
 
       const temp2 = await res2.json();
       if (temp2.succeed) {

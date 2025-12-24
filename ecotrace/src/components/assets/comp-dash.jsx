@@ -56,7 +56,9 @@ const CompDash = ({ user }) => {
 
   useEffect(() => {
     const Get = async (id_pel) => {
-      const res = await fetch(`/api/get-user-bayar-lunas?id_pel=${id_pel}`);
+      const res = await fetch(
+        `https://api.ecotrace.id/api/get-user-bayar-lunas?id_pel=${id_pel}`
+      );
       const temp = await res.json();
 
       if (temp.succeed) {
@@ -121,7 +123,9 @@ const CompDash = ({ user }) => {
     };
 
     const Get2 = async (id_pel) => {
-      const res = await fetch(`/api/get-user-revisi?id_pel=${id_pel}`);
+      const res = await fetch(
+        `https://api.ecotrace.id/api/get-user-revisi?id_pel=${id_pel}`
+      );
       const temp = await res.json();
       if (temp.succeed) {
         setRevisi(temp.data);

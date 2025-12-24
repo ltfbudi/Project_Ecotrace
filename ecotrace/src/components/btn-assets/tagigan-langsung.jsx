@@ -50,7 +50,9 @@ const TagihanLangsung = ({ setCreate, data }) => {
   const harga = totalPemakaian * 10000 + 10000;
 
   const getPemAwal = async (id_pel) => {
-    const res = await fetch(`/api/pem-awal-id-pel?id_pel=${id_pel}`);
+    const res = await fetch(
+      `https://api.ecotrace.id/api/pem-awal-id-pel?id_pel=${id_pel}`
+    );
 
     const temp = await res.json();
     if (temp.succeed) {
@@ -93,17 +95,20 @@ const TagihanLangsung = ({ setCreate, data }) => {
       biaya: harga,
     };
 
-    const res = await fetch("/api/buat-tagihan-langsung", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(newForm),
-    });
+    const res = await fetch(
+      "https://api.ecotrace.id/api/buat-tagihan-langsung",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newForm),
+      }
+    );
 
     const temp = await res.json();
     if (temp.succeed) {
-      const res2 = await fetch("/update/pem-awal/user", {
+      const res2 = await fetch("https://api.ecotrace.id/update/pem-awal/user", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

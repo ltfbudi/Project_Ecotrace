@@ -28,7 +28,7 @@ const CompProfile = ({ user }) => {
     };
 
     try {
-      const res = await fetch("/api/update-profile", {
+      const res = await fetch("https://api.ecotrace.id/api/update-profile", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

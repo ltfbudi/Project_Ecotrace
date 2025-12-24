@@ -19,7 +19,7 @@ const LoginLogic = (setUser) => {
     err.preventDefault();
 
     try {
-      const res = await fetch("/api/login", {
+      const res = await fetch("https://api.ecotrace.id/api/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

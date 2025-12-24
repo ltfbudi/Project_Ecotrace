@@ -22,7 +22,9 @@ const CompTagihan = ({ user }) => {
 
   useEffect(() => {
     const Get = async (id_pel) => {
-      const res = await fetch(`/api/data-transaksi?id_pel=${id_pel}`);
+      const res = await fetch(
+        `https://api.ecotrace.id/api/data-transaksi?id_pel=${id_pel}`
+      );
       const temp = await res.json();
 
       if (temp.succeed) {

@@ -19,13 +19,16 @@ const CreateTagAdm = ({ setCreate, user, who }) => {
       id: who.id,
     };
 
-    const res = await fetch("/api/give-revisi-pengajuan", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(newForm),
-    });
+    const res = await fetch(
+      "https://api.ecotrace.id/api/give-revisi-pengajuan",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newForm),
+      }
+    );
 
     const temp = await res.json();
     if (temp.succeed) {
@@ -40,13 +43,16 @@ const CreateTagAdm = ({ setCreate, user, who }) => {
       id: who.id,
     };
 
-    const res = await fetch("/api/approve-pengajuan-user", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(newForm),
-    });
+    const res = await fetch(
+      "https://api.ecotrace.id/api/approve-pengajuan-user",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newForm),
+      }
+    );
 
     const temp = await res.json();
     if (temp.succeed) {

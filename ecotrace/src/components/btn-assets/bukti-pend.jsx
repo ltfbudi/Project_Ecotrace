@@ -1,6 +1,6 @@
 const Bukti = ({ setBukti, data }) => {
   const approve = async () => {
-    const res = await fetch("/api/approve/payment", {
+    const res = await fetch("https://api.ecotrace.id/api/approve/payment", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -10,7 +10,7 @@ const Bukti = ({ setBukti, data }) => {
 
     const temp = await res.json();
     if (temp.succeed) {
-      const res2 = await fetch("/update/pem-awal/user", {
+      const res2 = await fetch("https://api.ecotrace.id/update/pem-awal/user", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

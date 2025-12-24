@@ -68,7 +68,7 @@ const PageRev = ({ setPageRevisi, user, who }) => {
       biaya: harga,
     };
 
-    const res = await fetch(`/api/update/revisi/user`, {
+    const res = await fetch(`https://api.ecotrace.id/api/update/revisi/user`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

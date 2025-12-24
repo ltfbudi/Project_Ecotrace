@@ -8,7 +8,9 @@ const TagAdm = ({ user, create, setCreate }) => {
 
   useEffect(() => {
     const Get = async () => {
-      const res = await fetch(`/api/get-tagihan-all-user`);
+      const res = await fetch(
+        `https://api.ecotrace.id/api/get-tagihan-all-user`
+      );
       const temp = await res.json();
 
       if (temp.succeed) {
@@ -16,7 +18,7 @@ const TagAdm = ({ user, create, setCreate }) => {
       }
     };
     const Get2 = async () => {
-      const res = await fetch(`/api/get-user-all`);
+      const res = await fetch(`https://api.ecotrace.id/api/get-user-all`);
       const temp = await res.json();
 
       if (temp.succeed) {

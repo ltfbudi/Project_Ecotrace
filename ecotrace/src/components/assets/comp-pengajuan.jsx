@@ -21,7 +21,9 @@ const CompPengajuan = ({ create, user, setCreate }) => {
 
   useEffect(() => {
     const Get = async (id_pel) => {
-      const res = await fetch(`/api/pem-awal-id-pel?id_pel=${id_pel}`);
+      const res = await fetch(
+        `https://api.ecotrace.id/api/pem-awal-id-pel?id_pel=${id_pel}`
+      );
 
       const temp = await res.json();
       if (temp.succeed) {
@@ -29,7 +31,9 @@ const CompPengajuan = ({ create, user, setCreate }) => {
       }
     };
     const Get2 = async (id_pel) => {
-      const res = await fetch(`/api/get-user-revisi?id_pel=${id_pel}`);
+      const res = await fetch(
+        `https://api.ecotrace.id/api/get-user-revisi?id_pel=${id_pel}`
+      );
 
       const temp = await res.json();
       if (temp.succeed) {
@@ -84,26 +88,53 @@ const CompPengajuan = ({ create, user, setCreate }) => {
 
               {/* Kolom 3 */}
               <div className="flex flex-col w-full md:w-1/3">
-                {/* Tombol */}
-                <button
-                  onClick={() => {
-                    setWho({
-                      id: item.id,
-                      bulan: item.bulan,
-                      tahun: item.tahun,
-                      id_pel: item.id_pel,
-                      pem_awal: item.pem_awal,
-                      pem_akhir: item.pem_akhir,
-                      pemakaian: item.pemakaian,
-                      url: item.url,
-                      revisi: item.revisi,
-                    });
-                    setPageRevisi(true);
-                  }}
-                  className="font-bold mt-4 shadow-md w-fit px-6 py-2 rounded-full bg-navBase text-white hover:-translate-y-0.5 transition duration-300 text-sm"
+                <h3 className=" md:mt-6 text-gray-600">Status Pengajuan</h3>
+                <h3
+                  className={`font-bold ${
+                    item.stat_rev === "yes"
+                      ? "text-red-500"
+                      : item.stat_rev === "clear"
+                      ? "text-green-400"
+                      : "text-yellow-300"
+                  }`}
                 >
-                  Lihat Revisi
-                </button>
+                  {item.stat_rev === "yes"
+                    ? "Dalam Revisi"
+                    : item.stat_rev === "clear"
+                    ? "Sudah Approve"
+                    : "Dalam Tinjauan"}
+                </h3>
+                {/* Tombol */}
+                {item.stat_rev === "yes" ? (
+                  <button
+                    onClick={() => {
+                      setWho({
+                        id: item.id,
+                        bulan: item.bulan,
+                        tahun: item.tahun,
+                        id_pel: item.id_pel,
+                        pem_awal: item.pem_awal,
+                        pem_akhir: item.pem_akhir,
+                        pemakaian: item.pemakaian,
+                        url: item.url,
+                        revisi: item.revisi,
+                      });
+                      setPageRevisi(true);
+                    }}
+                    className="font-bold mt-4 shadow-md w-fit px-6 py-2 rounded-full bg-navBase text-white hover:-translate-y-0.5 transition duration-300 text-sm"
+                  >
+                    Lihat Revisi
+                  </button>
+                ) : item.stat_rev === "clear" ? (
+                  <button
+                    onClick={() => {}}
+                    className="font-bold mt-4 shadow-md w-fit px-6 py-2 rounded-full bg-navBase text-white hover:-translate-y-0.5 transition duration-300 text-sm"
+                  >
+                    Lihat Pengajuan
+                  </button>
+                ) : (
+                  ""
+                )}
               </div>
             </div>
           </div>

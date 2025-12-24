@@ -6,7 +6,7 @@ const PengAdm = ({ user }) => {
 
   useEffect(() => {
     const GetDataPengajuanPending = async () => {
-      const res = await fetch("/api/get-all-pending");
+      const res = await fetch("https://api.ecotrace.id/api/get-all-pending");
       const temp = await res.json();
       if (temp.succeed) {
         setDataPending(temp.data);
@@ -14,7 +14,7 @@ const PengAdm = ({ user }) => {
     };
 
     const GetDataApprove = async () => {
-      const res = await fetch("/api/get-all-approve");
+      const res = await fetch("https://api.ecotrace.id/api/get-all-approve");
       const temp = await res.json();
       if (temp.succeed) {
         setDataApprove(temp.data);
@@ -191,7 +191,7 @@ const PengAdm = ({ user }) => {
         {/* TABEL 1: Pengajuan Pending */}
         <TableCard
           title="Informasi Pengajuan - Pending"
-          headers={["ID Pelanggan", "Nama", "Email", "Periode"]}
+          headers={["ID Pelanggan", "Nama", "Alamat", "Periode"]}
           data={dataPending} // Kirim data mentah ke TableCard
           renderRow={(item, index) => (
             <tr key={index} className="hover:bg-gray-50 transition-colors">
@@ -202,7 +202,7 @@ const PengAdm = ({ user }) => {
                 {item.nama}
               </td>
               <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-100 max-w-[200px] truncate">
-                {item.email}
+                {item.alamat}
               </td>
               <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-100 whitespace-nowrap">
                 {item.tanggal_format}
@@ -214,7 +214,7 @@ const PengAdm = ({ user }) => {
         {/* TABEL 2: Pengajuan Disetujui */}
         <TableCard
           title="Informasi Pengajuan - Disetujui"
-          headers={["ID Pelanggan", "Nama", "Email", "Periode"]}
+          headers={["ID Pelanggan", "Nama", "Alamat", "Periode"]}
           data={dataApprove} // Kirim data mentah ke TableCard
           renderRow={(item, index) => (
             <tr key={index} className="hover:bg-gray-50 transition-colors">
@@ -225,7 +225,7 @@ const PengAdm = ({ user }) => {
                 {item.nama}
               </td>
               <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-100 max-w-[200px] truncate">
-                {item.email}
+                {item.alamat}
               </td>
               <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-100 whitespace-nowrap">
                 {item.bulan + " " + item.tahun}
